@@ -20,10 +20,11 @@ public class SecurityConfig {
         http
             .csrf().disable()
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/inversionistas/registro").permitAll()
+                .requestMatchers("/api/inversionistas/**").permitAll()
                 .anyRequest().authenticated()
             )
-            .httpBasic();
+            .httpBasic().disable()
+            .formLogin().disable();
 
         return http.build();
     }
