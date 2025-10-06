@@ -1,6 +1,7 @@
 package co.edu.unbosque.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import co.edu.unbosque.model.entity.Inversionista;
@@ -10,6 +11,9 @@ import co.edu.unbosque.repository.InversionistaRepository;
 public class InversionistaService {
 
     @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
     private InversionistaRepository repo;
 
     public boolean registrar(Inversionista inversionista) {
@@ -17,6 +21,10 @@ public class InversionistaService {
             repo.existsByUsuario(inversionista.getUsuario())) {
             return false;
         }
+
+        String contraseñaEncriptada = passwordEncoder.encode(inversionista.getContrasena());
+        inversionista.setContrasena(contraseñaEncriptada);
+
         repo.save(inversionista);
         return true;
     }
