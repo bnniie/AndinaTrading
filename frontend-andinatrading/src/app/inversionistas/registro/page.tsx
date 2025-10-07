@@ -1,8 +1,11 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function RegistroPage() {
+  const router = useRouter();
+
   const [form, setForm] = useState({
     nombreCompleto: '',
     documentoIdentidad: '',
@@ -52,6 +55,10 @@ export default function RegistroPage() {
     }
   };
 
+  const volverInicio = () => {
+    router.push('/');
+  };
+
   return (
     <main style={{ padding: '2rem' }}>
       <h2>Registro de Inversionista</h2>
@@ -70,7 +77,12 @@ export default function RegistroPage() {
             />
           </div>
         ))}
-        <button type="submit" style={{ padding: '0.5rem 1rem' }}>Registrar</button>
+        <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+          <button type="submit" style={{ padding: '0.5rem 1rem' }}>Registrar</button>
+          <button type="button" onClick={volverInicio} style={{ padding: '0.5rem 1rem', backgroundColor: '#ccc' }}>
+            Volver
+          </button>
+        </div>
       </form>
       <p style={{ marginTop: '1rem' }}>{mensaje}</p>
     </main>
