@@ -28,4 +28,16 @@ public class InversionistaService {
         repo.save(inversionista);
         return true;
     }
+
+     public boolean validarCredenciales(String usuario, String contrasena) {
+        Inversionista inversionista = repo.findByUsuario(usuario);
+        if (inversionista == null) {
+            return false;
+        }
+        return passwordEncoder.matches(contrasena, inversionista.getContrasena());
+    }
+
+    public Inversionista buscarPorUsuario(String usuario) {
+        return repo.findByUsuario(usuario);
+    }
 }
