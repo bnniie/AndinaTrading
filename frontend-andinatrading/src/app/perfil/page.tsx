@@ -35,6 +35,16 @@ export default function PerfilPage() {
           <p><strong>Usuario:</strong> {inversionista.usuario}</p>
         </div>
       )}
+
+        <button
+            onClick={() => {
+            localStorage.removeItem('usuario');
+            localStorage.removeItem('inversionista');
+            window.location.href = '/';
+            }}
+            style={{ marginTop: '2rem', padding: '0.5rem 1rem', backgroundColor: '#f44336', color: 'white', border: 'none', cursor: 'pointer' }}
+            > Cerrar sesión
+        </button>
     </main>
   );
 }

@@ -1,8 +1,11 @@
 package co.edu.unbosque.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import co.edu.unbosque.model.entity.Inversionista;
 import co.edu.unbosque.repository.InversionistaRepository;
@@ -40,4 +43,15 @@ public class InversionistaService {
     public Inversionista buscarPorUsuario(String usuario) {
         return repo.findByUsuario(usuario);
     }
+
+    public boolean actualizarContrasena(String usuario, String nuevaContrasena) {
+    Inversionista inversionista = repo.findByUsuario(usuario);
+    if (inversionista != null) {
+        inversionista.setContrasena(passwordEncoder.encode(nuevaContrasena));
+        repo.save(inversionista);
+        return true;
+    }
+        return false;
+    }
+
 }

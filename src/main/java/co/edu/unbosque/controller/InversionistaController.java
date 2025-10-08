@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,6 +16,7 @@ import co.edu.unbosque.model.entity.Inversionista;
 import co.edu.unbosque.service.InversionistaService;
 import co.edu.unbosque.model.DTO.LoginDTO;
 import jakarta.validation.Valid;
+import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -50,6 +52,19 @@ public class InversionistaController {
         Inversionista inversionista = service.buscarPorUsuario(usuario);
         if (inversionista != null) {
             return ResponseEntity.ok(inversionista);
+        } else {
+            return ResponseEntity.status(404).body("Usuario no encontrado");
+        }
+    }
+
+    @PutMapping("/cambiar-contrasena")
+    public ResponseEntity<?> cambiarContrasena(@RequestBody Map<String, String> datos) {
+        String usuario = datos.get("usuario");
+        String nuevaContrasena = datos.get("nuevaContrasena");
+
+        boolean actualizado = service.actualizarContrasena(usuario, nuevaContrasena);
+        if (actualizado) {
+            return ResponseEntity.ok("Contraseña actualizada");
         } else {
             return ResponseEntity.status(404).body("Usuario no encontrado");
         }
