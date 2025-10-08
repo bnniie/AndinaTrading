@@ -75,6 +75,14 @@ export default function LoginPage() {
             style={{ width: '300px', padding: '0.5rem' }}
           />
         </div>
+
+        <div style={{ marginTop: '2rem' }}>
+          <button type="button" onClick={() => router.push('/recuperar')}
+          style={{ background: 'none', border: 'none', color: '#007bff', textDecoration: 'underline', cursor: 'pointer' }}
+          > ¿Olvidaste tu contraseña? 
+        </button>
+        </div>
+
         <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
           <button type="submit" style={{ padding: '0.5rem 1rem' }}>Ingresar</button>
           <button type="button" onClick={volverInicio} style={{ padding: '0.5rem 1rem', backgroundColor: '#ccc' }}>
