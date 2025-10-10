@@ -41,7 +41,13 @@ public class InversionistaController {
         boolean valido = service.validarCredenciales(login.getUsuario(), login.getContrasena());
         if (valido) {
             Inversionista inversionista = service.buscarPorUsuario(login.getUsuario());
-            return ResponseEntity.ok(inversionista);
+            String dashboardUrl = "http://localhost:8000/dashboard?usuario=" + inversionista.getUsuario() + "&return_url=http://localhost:3000/perfil";
+
+            return ResponseEntity.ok(Map.of(
+            "mensaje", "Login correcto",
+            "inversionista", inversionista,
+            "dashboard_url", dashboardUrl
+            ));
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");
         }
