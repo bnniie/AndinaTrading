@@ -41,7 +41,7 @@ public class InversionistaController {
         boolean valido = service.validarCredenciales(login.getUsuario(), login.getContrasena());
         if (valido) {
             Inversionista inversionista = service.buscarPorUsuario(login.getUsuario());
-            String dashboardUrl = "http://localhost:8000/dashboard?usuario=" + inversionista.getUsuario() + "&return_url=http://localhost:3000/perfil";
+            String dashboardUrl = "http://localhost:8000/dashboard?usuario=" + inversionista.getUsuario();
 
             return ResponseEntity.ok(Map.of(
             "mensaje", "Login correcto",
@@ -74,5 +74,20 @@ public class InversionistaController {
         } else {
             return ResponseEntity.status(404).body("Usuario no encontrado");
         }
+    }
+
+    @GetMapping("/estado-cuenta")
+    public ResponseEntity<?> estadoCuenta(@RequestParam String usuario) {
+        Inversionista inversionista = service.buscarPorUsuario(usuario);
+        if (inversionista == null) {
+            return ResponseEntity.status(404).body("Usuario no encontrado");
+        }
+
+        var movimientos = service.obtenerMovimientos(usuario);
+        return ResponseEntity.ok(Map.of(
+            "usuario", inversionista.getUsuario(),
+            "saldo", inversionista.getSaldo(),
+            "movimientos", movimientos
+        ));
     }
 }
