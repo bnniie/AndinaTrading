@@ -75,4 +75,19 @@ public class InversionistaController {
             return ResponseEntity.status(404).body("Usuario no encontrado");
         }
     }
+
+    @GetMapping("/estado-cuenta")
+    public ResponseEntity<?> estadoCuenta(@RequestParam String usuario) {
+        Inversionista inversionista = service.buscarPorUsuario(usuario);
+        if (inversionista == null) {
+            return ResponseEntity.status(404).body("Usuario no encontrado");
+        }
+
+        var movimientos = service.obtenerMovimientos(usuario);
+        return ResponseEntity.ok(Map.of(
+            "usuario", inversionista.getUsuario(),
+            "saldo", inversionista.getSaldo(),
+            "movimientos", movimientos
+        ));
+    }
 }

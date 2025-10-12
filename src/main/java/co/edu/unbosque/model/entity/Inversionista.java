@@ -44,6 +44,8 @@ public class Inversionista {
     @Size(min = 6)
     private String contrasena;
 
+    private Double saldo;
+
     public Long getId() {
         return id;
     }
@@ -116,5 +118,12 @@ public class Inversionista {
         this.contrasena = contrasena;
     }
 
+    public Double getSaldo() {
+        return saldo;
+    }
+
+    public void setSaldo(Double saldo) {
+        this.saldo = saldo;
+    }
 }
 
