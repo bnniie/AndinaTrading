@@ -1,58 +1,38 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import styles from './HomePage.module.css';
 
 export default function HomePage() {
   const router = useRouter();
 
-  const irARegistro = () => {
-    router.push('/inversionistas/registro');
-  };
-
-  const irALogin = () => {
-    router.push('/login');
-  };
-
   return (
-    <main style={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      height: '100vh',
-      backgroundColor: '#f5f5f5'
-    }}>
-      <h1 style={{ marginBottom: '2rem' }}>Bienvenido a AndinaTrading</h1>
-      <div style={{ display: 'flex', gap: '2rem' }}>
-        <button
-          onClick={irALogin}
-          style={{
-            padding: '1rem 2rem',
-            fontSize: '1rem',
-            backgroundColor: '#0070f3',
-            color: 'white',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: 'pointer'
-          }}
-        >
-          Iniciar sesión
-        </button>
-        <button
-          onClick={irARegistro}
-          style={{
-            padding: '1rem 2rem',
-            fontSize: '1rem',
-            backgroundColor: '#00c853',
-            color: 'white',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: 'pointer'
-          }}
-        >
-          Registrarse
-        </button>
-      </div>
+    <main className={styles.container}>
+      <section className={styles.left}>
+        <Image
+          src="/static/img/icon.png"
+          alt="AndinaTrading"
+          width={80}
+          height={80}
+          className={styles.logo}
+        />
+        <h1 className={styles.title}>Andina Trading</h1>
+        <p className={styles.description}>
+          Donde las oportunidades se convierten en decisiones financieras :3
+        </p>
+      </section>
+
+      <section className={styles.right}>
+        <div className={styles.buttonGroup}>
+          <button className={styles.actionButton} onClick={() => router.push('/login')}>
+            Iniciar sesión
+          </button>
+          <button className={styles.actionButton} onClick={() => router.push('/inversionistas/registro')}>
+            Registrarse
+          </button>
+        </div>
+      </section>
     </main>
   );
 }
