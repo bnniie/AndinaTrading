@@ -1,21 +1,24 @@
+/* Variables globales para colores y sombras */
 :root {
-  --bg: #d4d8f0;
-  --text: #232946;
-  --accent: #d881a3;
-  --shadow-dark: rgba(0, 0, 0, 0.15);
-  --shadow-light: rgba(255, 255, 255, 0.8);
+  --bg: #d4d8f0; /* Color de fondo principal */
+  --text: #232946; /* Color base para textos */
+  --accent: #d881a3; /* Color de acento para títulos y elementos destacados */
+  --shadow-dark: rgba(0, 0, 0, 0.15); /* Sombra oscura para profundidad */
+  --shadow-light: rgba(255, 255, 255, 0.8); /* Sombra clara para efecto neumórfico */
 }
 
+/* Configuración base para html y body */
 html,
 body {
   margin: 0;
   padding: 0;
   height: 100vh;
-  overflow: hidden;
-  font-family: "Segoe UI", sans-serif;
-  background: var(--bg);
+  overflow: hidden; /* Evita scroll vertical */
+  font-family: "Segoe UI", sans-serif; /* Fuente principal */
+  background: var(--bg); /* Aplica el color de fondo definido */
 }
 
+/* Contenedor principal que divide la pantalla en dos secciones */
 .container {
   display: flex;
   height: 100vh;
@@ -23,6 +26,7 @@ body {
   overflow: hidden;
 }
 
+/* Sección izquierda: contenido informativo o visual */
 .left {
   width: 50%;
   background: var(--bg);
@@ -34,10 +38,12 @@ body {
   padding: 2rem;
 }
 
+/* Espacio para logotipo o imagen superior */
 .logo {
   margin-bottom: 1rem;
 }
 
+/* Título principal de la sección izquierda */
 .title {
   font-size: 2.4rem;
   margin-bottom: 1rem;
@@ -46,6 +52,7 @@ body {
   letter-spacing: 1px;
 }
 
+/* Descripción o texto complementario */
 .description {
   font-size: 1.1rem;
   max-width: 400px;
@@ -54,6 +61,7 @@ body {
   margin-bottom: 1.5rem;
 }
 
+/* Sección derecha: área de interacción (botones, formularios, etc.) */
 .right {
   width: 50%;
   background: #e1e5fd;
@@ -63,6 +71,7 @@ body {
   align-items: center;
 }
 
+/* Contenedor de botones con espaciado vertical */
 .buttonGroup {
   display: flex;
   flex-direction: column;
@@ -70,6 +79,7 @@ body {
   width: 260px;
 }
 
+/* Estilo base para botones de acción */
 .actionButton {
   padding: 1rem;
   font-size: 1rem;
@@ -77,13 +87,18 @@ body {
   border-radius: 12px;
   background: #e1e5fd;
   color: #232946;
-  box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.1), -6px -6px 12px rgba(255, 255, 255, 0.8);
+  box-shadow: 
+    6px 6px 12px rgba(0, 0, 0, 0.1), /* sombra inferior derecha */
+    -6px -6px 12px rgba(255, 255, 255, 0.8); /* sombra superior izquierda */
   border: 1px solid rgba(0, 0, 0, 0.05);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s ease; /* animación suave al interactuar */
 }
 
+/* Estilo al pasar el cursor sobre el botón */
 .actionButton:hover {
-  box-shadow: inset 6px 6px 12px rgba(0, 0, 0, 0.1), inset -6px -6px 12px rgba(255, 255, 255, 0.8);
-  color: var(--accent);
+  box-shadow: 
+    inset 6px 6px 12px rgba(0, 0, 0, 0.1), /* sombra interna oscura */
+    inset -6px -6px 12px rgba(255, 255, 255, 0.8); /* sombra interna clara */
+  color: var(--accent); /* cambia el color del texto al color de acento */
 }

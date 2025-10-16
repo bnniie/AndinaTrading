@@ -1,0 +1,129 @@
+/* Variables CSS globales para colores y sombras */
+:root {
+  --bg: #e1e5fd; /* Color de fondo principal */
+  --text: #232946; /* Color base para textos */
+  --accent: #d881a3; /* Color de acento para títulos y botones */
+  --shadow-dark: rgba(0, 0, 0, 0.15); /* Sombra oscura para profundidad */
+  --shadow-light: rgba(255, 255, 255, 0.8); /* Sombra clara para efecto neumórfico */
+}
+
+/* Configuración base para html y body */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  overflow: hidden; /* Evita scroll vertical */
+  font-family: "Segoe UI", sans-serif; /* Fuente principal */
+  background: var(--bg); /* Aplica el color de fondo definido */
+}
+
+/* Contenedor principal centrado vertical y horizontalmente */
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* Caja del formulario con estilo neumórfico */
+.formBox {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 
+    8px 8px 16px var(--shadow-dark), /* Sombra inferior derecha */
+    -8px -8px 16px var(--shadow-light); /* Sombra superior izquierda */
+  width: 400px;
+}
+
+/* Título del formulario */
+.title {
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  color: var(--accent);
+}
+
+/* Estructura del formulario en columna */
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Grupo de entrada: incluye label e input */
+.inputGroup {
+  margin-bottom: 1rem;
+}
+
+/* Estilo para etiquetas */
+.label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+/* Estilo base para inputs y selects */
+.input {
+  width: 100%;
+  padding: 0.6rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+/* Grupo de botones alineados horizontalmente */
+.buttonGroup {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+}
+
+/* Botones de acción */
+.submitButton,
+.backButton {
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* Botón de registro */
+.submitButton {
+  background-color: var(--accent);
+  color: white;
+}
+
+/* Botón de volver */
+.backButton {
+  background-color: #ccc;
+  color: #232946;
+}
+
+/* Mensaje de estado (éxito o error) */
+.message {
+  margin-top: 1rem;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Ajuste global para lista de países del componente PhoneInput */
+:global(.country-list) {
+  max-height: none !important;
+  overflow-y: visible !important;
+}
+
+/* Estilo para texto de placeholder en inputs */
+.input::placeholder {
+  font-size: 0.9rem;
+  color: #888;
+}
+
+/* Estilo para texto de placeholder en selects */
+.selectPlaceholder {
+  color: #888;
+}
