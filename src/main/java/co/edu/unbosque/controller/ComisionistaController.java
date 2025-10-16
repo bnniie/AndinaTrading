@@ -9,14 +9,26 @@ import co.edu.unbosque.service.ComisionistaService;
 import co.edu.unbosque.model.DTO.LoginDTO;
 import jakarta.validation.Valid;
 
-@CrossOrigin(origins = "http://localhost:3000")
-@RestController
-@RequestMapping("/api/comisionistas")
+/**
+ * Controlador REST para gestionar operaciones relacionadas con comisionistas.
+ * Expone endpoints para autenticación y consulta de perfil.
+ */
+@CrossOrigin(origins = "http://localhost:3000") // Permite solicitudes CORS desde el frontend local.
+@RestController // Indica que esta clase es un controlador REST.
+@RequestMapping("/api/comisionistas") // Prefijo común para todos los endpoints de este controlador.
 public class ComisionistaController {
 
     @Autowired
-    private ComisionistaService service;
+    private ComisionistaService service; // Servicio que contiene la lógica de negocio para comisionistas.
 
+    /**
+     * Endpoint para iniciar sesión como comisionista.
+     * URL: POST /api/comisionistas/login
+     * Entrada: objeto LoginDTO con usuario y contraseña.
+     * Salida:
+     *   - 200 OK con datos del comisionista si las credenciales son válidas.
+     *   - 401 UNAUTHORIZED si las credenciales son incorrectas.
+     */
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginDTO login) {
         boolean valido = service.validarCredenciales(login.getUsuario(), login.getContrasena());
@@ -28,6 +40,14 @@ public class ComisionistaController {
         }
     }
 
+    /**
+     * Endpoint para obtener el perfil de un comisionista por su nombre de usuario.
+     * URL: GET /api/comisionistas/perfil?usuario={usuario}
+     * Entrada: parámetro de consulta 'usuario'.
+     * Salida:
+     *   - 200 OK con datos del comisionista si existe.
+     *   - 404 NOT FOUND si no se encuentra el usuario.
+     */
     @GetMapping("/perfil")
     public ResponseEntity<?> obtenerPerfil(@RequestParam String usuario) {
         Comisionista comisionista = service.buscarPorUsuario(usuario);

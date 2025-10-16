@@ -12,14 +12,30 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
+/**
+ * Clase de configuración de seguridad para la aplicación.
+ * Define políticas de acceso, codificación de contraseñas y configuración CORS.
+ */
 @Configuration
 public class SecurityConfig {
 
+    /**
+     * Bean que define el algoritmo de codificación de contraseñas.
+     * Se utiliza BCrypt, recomendado por Spring Security por su robustez.
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Bean que configura la cadena de filtros de seguridad HTTP.
+     * - Habilita CORS.
+     * - Desactiva CSRF (útil para APIs REST).
+     * - Permite acceso público a rutas específicas.
+     * - Requiere autenticación para cualquier otra ruta.
+     * - Desactiva autenticación básica y formularios de login.
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -35,6 +51,13 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /**
+     * Bean que configura las políticas CORS para permitir solicitudes desde el frontend.
+     * - Permite origen http://localhost:3000 (desarrollo local).
+     * - Permite métodos HTTP comunes.
+     * - Permite cualquier encabezado.
+     * - Habilita el envío de credenciales (cookies, headers de autenticación).
+     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -48,4 +71,3 @@ public class SecurityConfig {
         return source;
     }
 }
-
