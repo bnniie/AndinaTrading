@@ -32,14 +32,26 @@ public class InversionistaController {
      *   - 400 BAD REQUEST si los datos son inválidos o el usuario ya existe.
      */
     @PostMapping("/registro")
-    public ResponseEntity<String> registrar(@Valid @RequestBody Inversionista inversionista) {
-        boolean exito = service.registrar(inversionista);
+    public ResponseEntity<String> registrar(@RequestBody Map<String, String> datos) {
+        Inversionista inversionista = new Inversionista();
+        inversionista.setUsuario(datos.get("usuario"));
+        inversionista.setContrasena(datos.get("contrasena"));
+        inversionista.setNombre(datos.get("nombre"));
+        inversionista.setApellido(datos.get("apellido"));
+        inversionista.setCorreo(datos.get("correo"));
+        inversionista.setTelefono(datos.get("telefono"));
+        inversionista.setDocumentoIdentidad(datos.get("documentoIdentidad"));
+        inversionista.setSaldo(0.0);
+
+        String ciudadNombre = datos.get("ciudad");
+
+        boolean exito = service.registrar(inversionista, ciudadNombre);
         if (exito) {
             return ResponseEntity.ok("Registro exitoso");
         } else {
-            return ResponseEntity.badRequest().body("Error: datos inválidos o duplicados");
-        }
+            return ResponseEntity.badRequest().body("Error: ciudad no válida o datos duplicados");
     }
+}
 
     /**
      * Endpoint para iniciar sesión como inversionista.
