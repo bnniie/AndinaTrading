@@ -1,39 +1,54 @@
-'use client'; // Indica que este componente se ejecuta en el cliente (Client Component), necesario para usar hooks como useState y useRouter.
+'use client';
 
-import { useState } from 'react'; // Hook para manejar el estado local del formulario y mensajes.
-import { useRouter } from 'next/navigation'; // Hook para redireccionar al usuario tras el registro.
-import styles from './RegistroPage.module.css'; // Módulo CSS para estilizar el formulario de forma encapsulada.
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
 
-import PhoneInput from 'react-phone-input-2'; // Componente para entrada de teléfono con formato internacional.
-import 'react-phone-input-2/lib/style.css'; // Estilos base para el componente PhoneInput.
+import styles from './RegistroPage.module.css';
 
 export default function RegistroPage() {
+  const router = useRouter();
 
-  const router = useRouter(); // Instancia del router para navegación programática.
+  const paises = ['Colombia', 'Ecuador', 'Perú', 'Venezuela'];
 
-  // Estado inicial del formulario con todos los campos requeridos.
+  const ciudadesPorPais: Record<string, string[]> = {
+    Colombia: ['Bogotá', 'Medellín', 'Cali', 'Barranquilla', 'Cartagena', 'Bucaramanga', 'Pereira', 'Manizales', 'Santa Marta', 'Cúcuta'],
+    Ecuador: ['Quito', 'Guayaquil', 'Cuenca', 'Machala', 'Manta', 'Loja', 'Portoviejo', 'Ambato', 'Esmeraldas', 'Ibarra'],
+    Perú: ['Lima', 'Arequipa', 'Trujillo', 'Chiclayo', 'Piura', 'Cusco', 'Iquitos', 'Huancayo', 'Tacna', 'Puno'],
+    Venezuela: ['Caracas', 'Maracaibo', 'Valencia', 'Barquisimeto', 'Mérida', 'San Cristóbal', 'Puerto La Cruz', 'Ciudad Guayana', 'Maracay', 'Cumaná']
+  };
+
   const [form, setForm] = useState({
     nombre: '',
     apellido: '',
     documentoIdentidad: '',
     correo: '',
     telefono: '',
-    ciudad: '',
     pais: '',
+    ciudad: '',
     usuario: '',
     contrasena: ''
   });
 
-  const [mensaje, setMensaje] = useState(''); // Estado para mostrar mensajes de éxito o error.
+  const [confirmarContrasena, setConfirmarContrasena] = useState('');
+  const [mostrarContrasena, setMostrarContrasena] = useState(false);
+  const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
+  const [mensaje, setMensaje] = useState('');
 
-  // Maneja cambios en los campos del formulario (input y select).
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // Envía los datos del formulario al backend y gestiona la respuesta.
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (form.contrasena !== confirmarContrasena) {
+      setMensaje('❌ Las contraseñas no coinciden');
+      return;
+    }
+
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/inversionistas/registro`, {
         method: 'POST',
@@ -43,18 +58,19 @@ export default function RegistroPage() {
 
       if (response.ok) {
         setMensaje('✅ Registro exitoso');
-        // Reinicia el formulario tras registro exitoso.
         setForm({
           nombre: '',
           apellido: '',
           documentoIdentidad: '',
           correo: '',
           telefono: '',
-          ciudad: '',
           pais: '',
+          ciudad: '',
           usuario: '',
           contrasena: ''
         });
+        setConfirmarContrasena('');
+        router.push('/login');
       } else if (response.status === 400) {
         setMensaje('❌ Datos inválidos o usuario ya registrado');
       } else {
@@ -66,167 +82,172 @@ export default function RegistroPage() {
     }
   };
 
-  // Redirige al usuario a la página principal.
   const volverInicio = () => {
     router.push('/');
   };
 
   return (
     <main className={styles.container}>
-      <section className={styles.formBox}>
-        <h2 className={styles.title}>Registro de Inversionista</h2>
-        <form onSubmit={handleSubmit} className={styles.form}>
-          
-          {/* Campo: Nombres */}
-          <div className={styles.inputGroup}>
-            <label htmlFor="nombre">Nombres</label>
+      <section className={styles.left}>
+        <Image
+          src="/static/img/icon.png"
+          alt="AndinaTrading"
+          width={80}
+          height={80}
+          className={styles.logo}
+        />
+        <h1 className={styles.title}>Registro</h1>
+        <p className={styles.description}>
+          Crea tu cuenta para comenzar a invertir con Andina Trading
+        </p>
+      </section>
+
+      <section className={styles.right}>
+        <form className={styles.formGrid} onSubmit={handleSubmit}>
+          <div className={styles.column}>
             <input
               type="text"
               name="nombre"
-              id="nombre"
+              placeholder="Nombres"
               value={form.nombre}
               onChange={handleChange}
               required
               className={styles.input}
             />
-          </div>
+            <small className={styles.helper}>Ingresa tus nombres completos</small>
 
-          {/* Campo: Apellidos */}
-          <div className={styles.inputGroup}>
-            <label htmlFor="apellido">Apellidos</label>
             <input
               type="text"
               name="apellido"
-              id="apellido"
+              placeholder="Apellidos"
               value={form.apellido}
               onChange={handleChange}
               required
               className={styles.input}
             />
-          </div>
+            <small className={styles.helper}>Ingresa tus apellidos completos</small>
 
-          {/* Campo: Documento de Identidad con validación de 6 a 12 dígitos numéricos */}
-          <div className={styles.inputGroup}>
-            <label htmlFor="documentoIdentidad">Documento de Identidad</label>
             <input
               type="text"
               name="documentoIdentidad"
-              id="documentoIdentidad"
+              placeholder="Documento de Identidad"
               value={form.documentoIdentidad}
               onChange={handleChange}
               required
-              className={styles.input}
               minLength={6}
               maxLength={12}
               pattern="\d{6,12}"
-              placeholder="6–12 dígitos numéricos"
+              className={styles.input}
             />
+            <small className={styles.helper}>Debe contener entre 6 y 12 dígitos numéricos</small>
+
+            <select
+              name="pais"
+              value={form.pais}
+              onChange={(e) => {
+                setForm({ ...form, pais: e.target.value, ciudad: '' });
+              }}
+              required
+              className={styles.input}
+            >
+              <option value="">Selecciona tu país</option>
+              {paises.map((pais) => (
+                <option key={pais} value={pais}>{pais}</option>
+              ))}
+            </select>
+            <small className={styles.helper}>País de residencia</small>
+
+            <select
+              name="ciudad"
+              value={form.ciudad}
+              onChange={handleChange}
+              required
+              className={styles.input}
+              disabled={!form.pais}
+            >
+              <option value="">Selecciona tu ciudad</option>
+              {form.pais && ciudadesPorPais[form.pais].map((ciudad) => (
+                <option key={ciudad} value={ciudad}>{ciudad}</option>
+              ))}
+            </select>
+            <small className={styles.helper}>Ciudad donde resides actualmente</small>
           </div>
 
-          {/* Campo: Correo Electrónico */}
-          <div className={styles.inputGroup}>
-            <label htmlFor="correo">Correo Electrónico</label>
+          <div className={styles.column}>
             <input
               type="email"
               name="correo"
-              id="correo"
+              placeholder="Correo Electrónico"
               value={form.correo}
               onChange={handleChange}
               required
               className={styles.input}
             />
-          </div>
+            <small className={styles.helper}>Ejemplo: usuario@dominio.com</small>
 
-          {/* Campo: Teléfono con formato internacional */}
-          <div className={styles.inputGroup}>
-            <label htmlFor="telefono">Teléfono</label>
             <PhoneInput
               country={'co'}
               onlyCountries={['co', 'pe', 've', 'ec']}
               value={form.telefono}
               onChange={(phone) => setForm({ ...form, telefono: phone })}
               inputClass={styles.input}
+              placeholder="Teléfono"
             />
-          </div>
+            <small className={styles.helper}>Ingresa tu número telefónico</small>
 
-          {/* Campo: País con opciones limitadas */}
-          <div className={styles.inputGroup}>
-            <label htmlFor="pais">País</label>
-            <select
-              name="pais"
-              id="pais"
-              value={form.pais}
-              onChange={handleChange}
-              required
-              className={styles.input}
-            >
-              <option value="">Selecciona tu país</option>
-              <option value="Colombia">Colombia</option>
-              <option value="Ecuador">Ecuador</option>
-              <option value="Perú">Perú</option>
-              <option value="Venezuela">Venezuela</option>
-            </select>
-          </div>
-
-          {/* Campo: Ciudad */}
-          <div className={styles.inputGroup}>
-            <label htmlFor="ciudad">Ciudad</label>
-            <input
-              type="text"
-              name="ciudad"
-              id="ciudad"
-              value={form.ciudad}
-              onChange={handleChange}
-              required
-              className={styles.input}
-            />
-          </div>
-
-          {/* Campo: Usuario con validación alfanumérica */}
-          <div className={styles.inputGroup}>
-            <label htmlFor="usuario">Usuario</label>
             <input
               type="text"
               name="usuario"
-              id="usuario"
+              placeholder="Usuario"
               value={form.usuario}
               onChange={handleChange}
               required
-              className={styles.input}
               minLength={4}
               maxLength={20}
               pattern="[A-Za-z0-9]{4,20}"
-              placeholder="4 a 20 caracteres alfanuméricos"
-            />
-          </div>
-
-          {/* Campo: Contraseña con validación de seguridad */}
-          <div className={styles.inputGroup}>
-            <label htmlFor="contrasena">Contraseña</label>
-            <input
-              type="password"
-              name="contrasena"
-              id="contrasena"
-              value={form.contrasena}
-              onChange={handleChange}
-              required
               className={styles.input}
-              minLength={6}
-              maxLength={20}
-              pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,20}$"
-              placeholder="Incluir una letra, número y símbolo"
             />
+            <small className={styles.helper}>Debe tener entre 4 y 20 caracteres alfanuméricos</small>
+
+            <div className={styles.passwordWrapper}>
+              <input
+                type={mostrarContrasena ? 'text' : 'password'}
+                name="contrasena"
+                placeholder="Contraseña"
+                value={form.contrasena}
+                onChange={handleChange}
+                required
+                minLength={6}
+                maxLength={20}
+                pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{6,20}$"
+                className={styles.input}
+              />
+              <span onClick={() => setMostrarContrasena(!mostrarContrasena)} className={styles.eyeIcon}>👁</span>
+            </div>
+            <small className={styles.helper}>Debe tener entre 6 y 20 caracteres con letra, número y símbolo</small>
+
+            <div className={styles.passwordWrapper}>
+              <input
+                type={mostrarConfirmacion ? 'text' : 'password'}
+                name="confirmarContrasena"
+                placeholder="Confirmar contraseña"
+                value={confirmarContrasena}
+                onChange={(e) => setConfirmarContrasena(e.target.value)}
+                required
+                className={styles.input}
+              />
+              <span onClick={() => setMostrarConfirmacion(!mostrarConfirmacion)} className={styles.eyeIcon}>👁</span>
+            </div>
+            <small className={styles.helper}>Debe coincidir con la contraseña ingresada</small>
           </div>
 
-          {/* Botones de acción: Registrar y Volver */}
-          <div className={styles.buttonGroup}>
-            <button type="submit" className={styles.submitButton}>Registrar</button>
-            <button type="button" onClick={volverInicio} className={styles.backButton}>Volver</button>
+          <div className={styles.buttonRow}>
+            <button type="submit" className={styles.actionButton}>Registrar</button>
+            <button type="button" onClick={volverInicio} className={styles.actionButton}>Volver</button>
           </div>
         </form>
 
-        {/* Mensaje de estado tras el envío */}
-        <p className={styles.message}>{mensaje}</p>
+        <p className={styles.mensaje}>{mensaje}</p>
       </section>
     </main>
   );

@@ -7,10 +7,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import co.edu.unbosque.model.DTO.PrecioDTO;
+import co.edu.unbosque.model.entity.Ciudad;
 import co.edu.unbosque.model.entity.Inversionista;
 import co.edu.unbosque.model.entity.Movimiento;
+import co.edu.unbosque.model.entity.Pais;
+import co.edu.unbosque.repository.CiudadRepository;
 import co.edu.unbosque.repository.InversionistaRepository;
 import co.edu.unbosque.repository.MovimientoRepository;
+import co.edu.unbosque.repository.PaisRepository;
 
 import java.util.List;
 
@@ -33,13 +37,34 @@ public class InversionistaService {
     @Autowired
     private PrecioService precioService; // Servicio para obtener precios de activos financieros.
 
+    @Autowired
+    private CiudadRepository ciudadRepository;
+
+    @Autowired
+    private PaisRepository paisRepository;
+
+
     /**
      * Registra un nuevo inversionista si no existe previamente por documento o usuario.
      * Encripta la contraseña antes de guardar.
      * @param inversionista datos del nuevo usuario.
      * @return true si el registro fue exitoso, false si ya existe.
      */
-    public boolean registrar(Inversionista inversionista) {
+    public boolean registrar(Inversionista inversionista, String ciudadNombre) {
+        // Buscar la ciudad por nombre
+        Ciudad ciudad = ciudadRepository.findByNombre(ciudadNombre);
+        if (ciudad == null) {
+            return false; // ciudad no válida
+        }
+
+        // Obtener el país asociado a la ciudad
+        Pais pais = ciudad.getPais();
+
+        // Asignar ciudad y país como objetos
+        inversionista.setCiudad(ciudad);
+        inversionista.setPais(pais);
+
+        // Validar si ya existe por documento o usuario
         if (repo.existsByDocumentoIdentidad(inversionista.getDocumentoIdentidad()) ||
             repo.existsByUsuario(inversionista.getUsuario())) {
             return false;

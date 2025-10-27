@@ -1,102 +1,151 @@
-'use client'; // Este componente se ejecuta en el cliente. Es necesario para usar hooks como useState y useRouter, y para acceder a localStorage o realizar navegación programática.
+'use client';
 
-import { useState } from 'react'; // Hook para manejar el estado local de los campos y mensajes.
-import { useRouter } from 'next/navigation'; // Hook para redireccionar al usuario tras la acción.
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import styles from './RestorePage.module.css';
 
 export default function RecuperarPage() {
-  const router = useRouter(); // Instancia del router para navegación programática.
+  const router = useRouter();
 
-  // Estado para almacenar el nombre de usuario ingresado.
-  const [usuario, setUsuario] = useState('');
+  const [credenciales, setCredenciales] = useState({
+    usuario: '',
+    nuevaContrasena: ''
+  });
 
-  // Estado para almacenar la nueva contraseña ingresada.
-  const [nuevaContrasena, setNuevaContrasena] = useState('');
-
-  // Estado para mostrar mensajes de éxito o error tras el intento de recuperación.
+  const [confirmarContrasena, setConfirmarContrasena] = useState('');
+  const [mostrarContrasena, setMostrarContrasena] = useState(false);
+  const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
   const [mensaje, setMensaje] = useState('');
 
-  // Maneja el envío del formulario y realiza la solicitud al backend.
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCredenciales({ ...credenciales, [e.target.name]: e.target.value });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); // Previene el comportamiento por defecto del formulario.
+    e.preventDefault();
+
+    if (credenciales.nuevaContrasena !== confirmarContrasena) {
+      setMensaje('❌ Las contraseñas no coinciden');
+      return;
+    }
 
     try {
-      // Realiza una solicitud PUT al endpoint de cambio de contraseña.
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/inversionistas/cambiar-contrasena`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ usuario, nuevaContrasena })
+        body: JSON.stringify(credenciales)
       });
 
-      // Manejo de respuestas según el estado HTTP.
       if (response.ok) {
-        setMensaje('✅ Contraseña actualizada correctamente');
+        setMensaje('✅ Contraseña actualizada');
+        setCredenciales({ usuario: '', nuevaContrasena: '' });
+        setConfirmarContrasena('');
+        router.replace('/login')
       } else if (response.status === 404) {
         setMensaje('❌ Usuario no encontrado');
       } else {
         setMensaje('⚠️ Error al actualizar la contraseña');
       }
     } catch (error) {
-      // Manejo de errores de red o conexión.
       console.error(error);
       setMensaje('❌ No se pudo conectar con el servidor');
     }
   };
 
+  const volverLogin = () => {
+    router.push('/login');
+  };
+
   return (
-    <main style={{ padding: '2rem' }}>
-      <h2>Recuperar contraseña</h2>
+    <main className={styles.container}>
+      <section className={styles.left}>
+        <Image
+          src="/static/img/icon.png"
+          alt="AndinaTrading"
+          width={80}
+          height={80}
+          className={styles.logo}
+        />
+        <h1 className={styles.title}>Restablecer contraseña</h1>
+        <p className={styles.description}>
+          Ingresa tu usuario y confirma tu nueva contraseña
+        </p>
+      </section>
 
-      {/* Formulario para ingresar usuario y nueva contraseña */}
-      <form onSubmit={handleSubmit}>
-        {/* Campo: Usuario */}
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="usuario">Usuario</label><br />
-          <input
-            type="text"
-            id="usuario"
-            value={usuario}
-            onChange={(e) => setUsuario(e.target.value)}
-            required
-            style={{ width: '300px', padding: '0.5rem' }}
-          />
-        </div>
+      <section className={styles.right}>
+        <form onSubmit={handleSubmit}>
+          <div className={styles.formGroup}>
+            <input
+              type="text"
+              name="usuario"
+              placeholder="Usuario"
+              value={credenciales.usuario}
+              onChange={handleChange}
+              required
+              className={styles.input}
+            />
+          </div>
 
-        {/* Campo: Nueva contraseña */}
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="nuevaContrasena">Nueva contraseña</label><br />
-          <input
-            type="password"
-            id="nuevaContrasena"
-            value={nuevaContrasena}
-            onChange={(e) => setNuevaContrasena(e.target.value)}
-            required
-            style={{ width: '300px', padding: '0.5rem' }}
-          />
-        </div>
+          <div className={styles.formGroup}>
+            <div className={styles.passwordWrapper}>
+              <input
+                type={mostrarContrasena ? 'text' : 'password'}
+                name="nuevaContrasena"
+                placeholder="Nueva contraseña"
+                value={credenciales.nuevaContrasena}
+                onChange={handleChange}
+                required
+                minLength={6}
+                maxLength={20}
+                pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{6,20}$"
+                className={styles.input}
+              />
+              <span
+                className={styles.eyeIcon}
+                onClick={() => setMostrarContrasena(!mostrarContrasena)}
+              >
+                👁
+              </span>
+            </div>
+            <small className={styles.helper}>
+              Debe tener entre 6 y 20 caracteres con letra, número y símbolo
+            </small>
+          </div>
 
-        {/* Botón para enviar el formulario */}
-        <button type="submit" style={{ padding: '0.5rem 1rem' }}>
-          Cambiar contraseña
-        </button>
-      </form>
+          <div className={styles.formGroup}>
+            <div className={styles.passwordWrapper}>
+              <input
+                type={mostrarConfirmacion ? 'text' : 'password'}
+                name="confirmarContrasena"
+                placeholder="Confirmar contraseña"
+                value={confirmarContrasena}
+                onChange={(e) => setConfirmarContrasena(e.target.value)}
+                required
+                className={styles.input}
+              />
+              <span
+                className={styles.eyeIcon}
+                onClick={() => setMostrarConfirmacion(!mostrarConfirmacion)}
+              >
+                👁
+              </span>
+            </div>
+            <small className={styles.helper}>
+              Debe coincidir con la nueva contraseña
+            </small>
+          </div>
 
-      {/* Mensaje de estado tras el intento de recuperación */}
-      {mensaje && <p style={{ marginTop: '1rem' }}>{mensaje}</p>}
+          <div className={styles.buttonRow}>
+            <button type="submit" className={styles.actionButton}>Actualizar</button>
+            <button type="button" onClick={volverLogin} className={styles.actionButton}>Volver</button>
+          </div>
 
-      {/* Botón para volver al login */}
-      <button
-        type="button"
-        onClick={() => router.push('/login')}
-        style={{
-          marginTop: '1rem',
-          padding: '0.5rem 1rem',
-          backgroundColor: '#ccc',
-          border: 'none',
-          cursor: 'pointer'
-        }}
-      >
-        Volver
-      </button>
+          {mensaje && (
+            <p className={styles.mensaje}>{mensaje}</p>
+          )}
+        </form>
+      </section>
     </main>
   );
 }
