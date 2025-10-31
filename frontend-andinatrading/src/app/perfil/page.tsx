@@ -24,23 +24,31 @@ export default function PerfilPage() {
   }, []);
 
   // Obtener estadísticas de órdenes por estado
-  useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/inversionistas/ordenes/estadisticas`, {
-      credentials: 'include'
+useEffect(() => {
+  fetch("http://localhost:8080/api/inversionistas/ordenes/estadisticas", {
+    method: "GET",
+    credentials: "include",
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error("Error al obtener estadísticas");
+      return res.json();
     })
-      .then((res) => {
-        if (!res.ok) throw new Error('Error al obtener estadísticas');
-        return res.json();
-      })
-      .then((data) => {
-        console.log('Estadísticas recibidas:', data);
-        setOrdenesPorEstado(data);
-      })
-      .catch((err) => {
-        console.error('Error al procesar estadísticas:', err);
-        setOrdenesPorEstado({});
-      });
-  }, []);
+    .then((data) => {
+  console.log("Estadisticas recibidas:", data);
+
+  const normalizado: Record<string, number> = Object.fromEntries(
+    Object.entries(data).map(([k, v]) => [k.toLowerCase().trim(), Number(v)])
+  );
+
+  setOrdenesPorEstado(normalizado);
+})
+
+    .catch((err) => {
+      console.error("Error al procesar estadísticas:", err);
+      setOrdenesPorEstado({});
+    });
+}, []);
+
 
   return (
     <Layout>

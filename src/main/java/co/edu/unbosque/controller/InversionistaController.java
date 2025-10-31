@@ -145,6 +145,7 @@ public class InversionistaController {
     @GetMapping("/ordenes/estadisticas")
     public ResponseEntity<?> estadisticasOrdenes(HttpSession session) {
         String usuario = (String) session.getAttribute("usuario");
+        System.out.println("----------------- "+usuario);
         if (usuario == null) {
             return ResponseEntity.status(401).body("No hay sesión activa");
         }

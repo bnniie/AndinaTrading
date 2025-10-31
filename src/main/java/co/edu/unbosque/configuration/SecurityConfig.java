@@ -39,14 +39,23 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .cors().and()
-            .csrf().disable()
+            .cors(cors -> cors.configurationSource(request -> {
+                CorsConfiguration config = new CorsConfiguration();
+                config.setAllowedOrigins(List.of("http://localhost:3000"));
+                config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                config.setAllowedHeaders(List.of("*"));
+                config.setAllowCredentials(true);
+                return config;
+            }))
+            .csrf(csrf -> csrf
+                .ignoringRequestMatchers("/api/inversionistas/**")
+            )
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/comisionistas/login", "/api/inversionistas/**").permitAll()
                 .anyRequest().authenticated()
             )
-            .httpBasic().disable()
-            .formLogin().disable();
+            .httpBasic(httpBasic -> httpBasic.disable())
+            .formLogin(form -> form.disable());
 
         return http.build();
     }
