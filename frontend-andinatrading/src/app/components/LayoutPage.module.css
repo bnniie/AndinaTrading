@@ -1,0 +1,100 @@
+:root {
+  --bg: #d4d8f0;
+  --text: #232946;
+  --accent: #d881a3;
+  --shadow-dark: rgba(0, 0, 0, 0.15);
+  --shadow-light: rgba(255, 255, 255, 0.8);
+}
+
+/* Contenedor general del layout */
+.layout {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  background: var(--bg);
+  font-family: "Segoe UI", sans-serif;
+  overflow: hidden;
+}
+
+/* Sidebar izquierdo */
+.div1 {
+  width: 80px;
+  background: var(--bg);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 8px 8px 16px var(--shadow-dark),
+              -8px -8px 16px var(--shadow-light);
+}
+
+/* Logo o ícono superior */
+.icon-pic {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  margin-top: 1rem;
+  object-fit: cover;
+}
+
+/* Grupo de burbujas de navegación */
+.menu-bubbles {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+/* Botón burbuja */
+.bubble {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 17px;
+  background: var(--bg);
+  box-shadow: 5px 5px 7px var(--shadow-dark),
+              -5px -5px 7px var(--shadow-light);
+  color: var(--text);
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.bubble:hover {
+  transform: translateY(-3px);
+  box-shadow: 2px 2px 5px var(--shadow-dark),
+              -2px -2px 5px var(--shadow-light);
+}
+
+.bubble.active {
+  box-shadow: inset 5px 5px 7px var(--shadow-dark),
+              inset -5px -5px 7px var(--shadow-light);
+  transform: translateY(2px);
+}
+
+.bubble.active:hover {
+  box-shadow: inset 5px 5px 7px var(--shadow-dark),
+              inset -5px -5px 7px var(--shadow-light);
+  transform: translateY(2px);
+}
+
+/* Burbuja de logout */
+.logout-bubble {
+  margin-bottom: 1.5rem;
+}
+
+.logout {
+  color: #462325;
+  background: #e2a9a9;
+  box-shadow: 5px 5px 10px var(--shadow-dark),
+              -5px -5px 10px var(--shadow-light);
+}
+
+.logout:hover {
+  transform: scale(1.05);
+  box-shadow: 2px 2px 5px var(--shadow-dark),
+              -2px -2px 5px var(--shadow-light);
+}

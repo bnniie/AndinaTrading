@@ -6,17 +6,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import co.edu.unbosque.model.DTO.PrecioDTO;
 import co.edu.unbosque.model.entity.Ciudad;
 import co.edu.unbosque.model.entity.Inversionista;
-import co.edu.unbosque.model.entity.Movimiento;
 import co.edu.unbosque.model.entity.Pais;
 import co.edu.unbosque.repository.CiudadRepository;
 import co.edu.unbosque.repository.InversionistaRepository;
-import co.edu.unbosque.repository.MovimientoRepository;
 import co.edu.unbosque.repository.PaisRepository;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
+import java.util.Map;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Servicio que encapsula la lógica de negocio relacionada con los inversionistas.
@@ -25,6 +27,10 @@ import java.util.List;
 @Service
 public class InversionistaService {
 
+    
+    @PersistenceContext
+    private EntityManager entityManager;
+
     @Autowired
     private PasswordEncoder passwordEncoder; // Codificador de contraseñas (BCrypt).
 
@@ -32,16 +38,11 @@ public class InversionistaService {
     private InversionistaRepository repo; // Repositorio JPA para inversionistas.
 
     @Autowired
-    private MovimientoRepository movimientoRepository; // Repositorio JPA para movimientos financieros.
-
-    @Autowired
-    private PrecioService precioService; // Servicio para obtener precios de activos financieros.
-
-    @Autowired
     private CiudadRepository ciudadRepository;
 
     @Autowired
     private PaisRepository paisRepository;
+
 
 
     /**
@@ -118,73 +119,20 @@ public class InversionistaService {
         return false;
     }
 
-    /**
-     * Registra una operación de compra de activos por parte del inversionista.
-     * Descuenta el monto del saldo y guarda el movimiento.
-     * @param usuario nombre de usuario.
-     * @param symbol símbolo del activo.
-     * @param cantidad cantidad adquirida.
-     * @return true si la operación fue registrada, false si el usuario no existe.
-     */
-    public boolean registrarCompra(String usuario, String symbol, int cantidad) {
-        Inversionista i = repo.findByUsuario(usuario);
-        if (i == null) return false;
+    public Map<String, Long> contarOrdenesPorEstado(String usuario) {
+        Inversionista inv = repo.findByUsuario(usuario);
+        if (inv == null) return Map.of();
 
-        PrecioDTO precio = precioService.obtenerPrecio(symbol);
-        double monto = precio.getPrecio_actual() * cantidad;
+        List<Object[]> resultados = entityManager.createQuery("""
+            SELECT o.estado, COUNT(o)
+            FROM Orden o
+            WHERE o.inversionista.id = :invId
+            GROUP BY o.estado
+        """).setParameter("invId", inv.getId()).getResultList();
 
-        i.setSaldo(i.getSaldo() - monto);
-        movimientoRepository.save(new Movimiento("COMPRA", symbol, monto, LocalDateTime.now(), i));
-        repo.save(i);
-        return true;
-    }
-
-    /**
-     * Registra una operación de venta de activos por parte del inversionista.
-     * Aumenta el saldo y guarda el movimiento.
-     * @param usuario nombre de usuario.
-     * @param symbol símbolo del activo.
-     * @param cantidad cantidad vendida.
-     * @return true si la operación fue registrada, false si el usuario no existe.
-     */
-    public boolean registrarVenta(String usuario, String symbol, int cantidad) {
-        Inversionista i = repo.findByUsuario(usuario);
-        if (i == null) return false;
-
-        PrecioDTO precio = precioService.obtenerPrecio(symbol);
-        double monto = precio.getPrecio_actual() * cantidad;
-
-        i.setSaldo(i.getSaldo() + monto);
-        movimientoRepository.save(new Movimiento("VENTA", symbol, monto, LocalDateTime.now(), i));
-        repo.save(i);
-        return true;
-    }
-
-    /**
-     * Registra un ajuste manual en el saldo del inversionista.
-     * Puede representar correcciones, bonificaciones u otros movimientos.
-     * @param usuario nombre de usuario.
-     * @param symbol referencia del ajuste (ej. motivo o activo).
-     * @param variacion monto a ajustar (positivo o negativo).
-     * @return true si el ajuste fue registrado, false si el usuario no existe.
-     */
-    public boolean registrarAjuste(String usuario, String symbol, double variacion) {
-        Inversionista i = repo.findByUsuario(usuario);
-        if (i == null) return false;
-
-        i.setSaldo(i.getSaldo() + variacion);
-        movimientoRepository.save(new Movimiento("AJUSTE", symbol, variacion, LocalDateTime.now(), i));
-        repo.save(i);
-        return true;
-    }
-
-    /**
-     * Obtiene la lista de movimientos financieros realizados por el inversionista.
-     * @param usuario nombre de usuario.
-     * @return lista de movimientos asociados al usuario.
-     */
-    public List<Movimiento> obtenerMovimientos(String usuario) {
-        Inversionista i = repo.findByUsuario(usuario);
-        return movimientoRepository.findByInversionista(i);
-    }
+        return resultados.stream().collect(Collectors.toMap(
+            r -> ((String) r[0]).toLowerCase().trim(),
+            r -> (Long) r[1]
+        ));
+    } 
 }

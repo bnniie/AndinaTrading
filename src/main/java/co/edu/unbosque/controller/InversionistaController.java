@@ -8,14 +8,12 @@ import org.springframework.web.bind.annotation.*;
 import co.edu.unbosque.model.entity.Inversionista;
 import co.edu.unbosque.service.InversionistaService;
 import co.edu.unbosque.model.DTO.LoginDTO;
+
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import java.util.Map;
 
-/**
- * Controlador REST para gestionar operaciones relacionadas con inversionistas.
- * Expone endpoints para registro, autenticación, perfil, cambio de contraseña y estado de cuenta.
- */
-@CrossOrigin(origins = "http://localhost:3000") // Permite solicitudes CORS desde el frontend local.
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 @RestController // Indica que esta clase es un controlador REST.
 @RequestMapping("/api/inversionistas") // Prefijo común para todos los endpoints de este controlador.
 public class InversionistaController {
@@ -61,22 +59,27 @@ public class InversionistaController {
      *   - 200 OK con datos del inversionista y URL del dashboard si las credenciales son válidas.
      *   - 401 UNAUTHORIZED si las credenciales son incorrectas.
      */
+
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginDTO login) {
+    public ResponseEntity<?> login(@RequestBody LoginDTO login, HttpSession session) {
         boolean valido = service.validarCredenciales(login.getUsuario(), login.getContrasena());
         if (valido) {
             Inversionista inversionista = service.buscarPorUsuario(login.getUsuario());
+
+            // Guardar el usuario en la sesión
+            session.setAttribute("usuario", inversionista.getUsuario());
+
             String dashboardUrl = "http://localhost:8000/dashboard?usuario=" + inversionista.getUsuario();
 
             return ResponseEntity.ok(Map.of(
                 "mensaje", "Login correcto",
-                "inversionista", inversionista,
                 "dashboard_url", dashboardUrl
             ));
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");
         }
     }
+
 
     /**
      * Endpoint para obtener el perfil de un inversionista por su nombre de usuario.
@@ -87,13 +90,29 @@ public class InversionistaController {
      *   - 404 NOT FOUND si no se encuentra el usuario.
      */
     @GetMapping("/perfil")
-    public ResponseEntity<?> obtenerPerfil(@RequestParam String usuario) {
+    public ResponseEntity<?> obtenerPerfil(HttpSession session) {
+        String usuario = (String) session.getAttribute("usuario");
+        if (usuario == null) {
+            return ResponseEntity.status(401).body("No hay sesión activa");
+        }
+
         Inversionista inversionista = service.buscarPorUsuario(usuario);
-        if (inversionista != null) {
-            return ResponseEntity.ok(inversionista);
-        } else {
+        if (inversionista == null) {
             return ResponseEntity.status(404).body("Usuario no encontrado");
         }
+
+        Map<String, Object> perfil = Map.of(
+            "usuario", inversionista.getUsuario(),
+            "nombre", inversionista.getNombre(),
+            "apellido", inversionista.getApellido(),
+            "correo", inversionista.getCorreo(),
+            "telefono", inversionista.getTelefono(),
+            "saldo", inversionista.getSaldo(),
+            "ciudad", inversionista.getCiudad() != null ? inversionista.getCiudad().getNombre() : "Sin ciudad",
+            "pais", inversionista.getPais() != null ? inversionista.getPais().getNombre() : "Sin país"
+        );
+
+        return ResponseEntity.ok(perfil);
     }
 
     /**
@@ -117,26 +136,20 @@ public class InversionistaController {
         }
     }
 
-    /**
-     * Endpoint para consultar el estado de cuenta de un inversionista.
-     * URL: GET /api/inversionistas/estado-cuenta?usuario={usuario}
-     * Entrada: parámetro de consulta 'usuario'.
-     * Salida:
-     *   - 200 OK con saldo y lista de movimientos si el usuario existe.
-     *   - 404 NOT FOUND si el usuario no existe.
-     */
-    @GetMapping("/estado-cuenta")
-    public ResponseEntity<?> estadoCuenta(@RequestParam String usuario) {
-        Inversionista inversionista = service.buscarPorUsuario(usuario);
-        if (inversionista == null) {
-            return ResponseEntity.status(404).body("Usuario no encontrado");
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpSession session) {
+        session.invalidate();
+        return ResponseEntity.ok("Sesión cerrada");
+    }
+
+    @GetMapping("/ordenes/estadisticas")
+    public ResponseEntity<?> estadisticasOrdenes(HttpSession session) {
+        String usuario = (String) session.getAttribute("usuario");
+        if (usuario == null) {
+            return ResponseEntity.status(401).body("No hay sesión activa");
         }
 
-        var movimientos = service.obtenerMovimientos(usuario);
-        return ResponseEntity.ok(Map.of(
-            "usuario", inversionista.getUsuario(),
-            "saldo", inversionista.getSaldo(),
-            "movimientos", movimientos
-        ));
+        Map<String, Long> conteo = service.contarOrdenesPorEstado(usuario);
+        return ResponseEntity.ok(conteo); 
     }
 }

@@ -27,7 +27,8 @@ export default function LoginPage() {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/inversionistas/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(credenciales)
+        body: JSON.stringify(credenciales),
+        credentials: 'include'
       });
 
       let datos;

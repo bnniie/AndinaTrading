@@ -1,0 +1,227 @@
+:root {
+  --bg: #d4d8f0;
+  --text: #232946;
+  --accent: #d881a3;
+  --shadow-dark: rgba(0, 0, 0, 0.15);
+  --shadow-light: rgba(255, 255, 255, 0.8);
+}
+
+/* Base */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  overflow-x: hidden;
+  font-family: "Segoe UI", sans-serif;
+  background: var(--bg);
+}
+
+.divider-line {
+  border: none;
+  border-bottom: 1px solid rgba(200, 200, 230, 0.6);
+  margin-bottom: 1.2rem;
+}
+
+/* Mensaje de error */
+.mensaje {
+  color: #d32f2f;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+/* Perfil del inversionista (izquierda) */
+.datos {
+  background: var(--bg);
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 6px 6px 12px var(--shadow-dark),
+              -6px -6px 12px var(--shadow-light);
+  width: 300px;
+  flex-shrink: 0;
+}
+
+.datos p {
+  margin: 0.5rem 0;
+  font-size: 1rem;
+  color: var(--text);
+}
+
+.datos strong {
+  color: var(--accent);
+}
+
+/* Ícono de perfil */
+.iconoPerfil {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.iconoCirculo {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 6px 6px 12px var(--shadow-dark),
+              -6px -6px 12px var(--shadow-light);
+  color: var(--accent);
+}
+
+/* Botón de acción */
+.actionButton,
+.botonCerrar {
+  margin-top: 1rem;
+  padding: 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 12px;
+  background: #e1e5fd;
+  color: var(--text);
+  box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.1),
+              -6px -6px 12px rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.actionButton:hover,
+.botonCerrar:hover {
+  box-shadow: inset 6px 6px 12px rgba(0, 0, 0, 0.1),
+              inset -6px -6px 12px rgba(255, 255, 255, 0.8);
+  color: var(--accent);
+}
+
+.panelSecundario {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  flex: 2;
+  min-width: 800px;
+}
+
+/* Órdenes */
+.ordenes {
+  background: var(--bg);
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 6px 6px 12px var(--shadow-dark),
+              -6px -6px 12px var(--shadow-light);
+}
+
+.estadoOrden {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 1rem;
+}
+
+.numero {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--accent);
+  text-align: center;
+}
+
+/* Saldo */
+.saldo {
+  background: var(--bg);
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 6px 6px 12px var(--shadow-dark),
+              -6px -6px 12px var(--shadow-light);
+}
+
+.movimientos {
+  background: var(--bg);
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 6px 6px 12px var(--shadow-dark),
+              -6px -6px 12px var(--shadow-light);
+}
+
+/* Subtítulo del gráfico */
+.subtituloGrafico {
+  margin-top: 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* Área del gráfico */
+.graficoPlaceholder {
+  margin-top: 1rem;
+  height: 180px;
+  background: #e1e5fd;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+  font-style: italic;
+}
+
+.wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.pageContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Título alineado al contenido */
+.titulo {
+  font-size: 2rem;
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  margin-left: 0.5rem;
+}
+
+/* Contenedor horizontal de los paneles */
+.contenedorPrincipal {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  align-items: center;
+}
+
+/* Agrupador general */
+.saldoGrafico {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Fila con saldo y botones */
+.saldoYBotones {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* Título del saldo */
+.saldoTitulo {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--text);
+}
+
+.botonesSaldo {
+  display: flex;
+  gap: 1rem;
+}
+
+.botonEditar {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
