@@ -4,6 +4,15 @@ import { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import styles from './ProfilePage.module.css';
 import { User } from 'lucide-react';
+import { Pie } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend
+} from 'chart.js';
+
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default function PerfilPage() {
   const [inversionista, setInversionista] = useState<any>(null);
@@ -24,36 +33,54 @@ export default function PerfilPage() {
   }, []);
 
   // Obtener estadísticas de órdenes por estado
-useEffect(() => {
-  fetch("http://localhost:8080/api/inversionistas/ordenes/estadisticas", {
-    method: "GET",
-    credentials: "include",
-  })
-    .then((res) => {
-      if (!res.ok) throw new Error("Error al obtener estadísticas");
-      return res.json();
+  useEffect(() => {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/inversionistas/ordenes/estadisticas`, {
+      method: 'GET',
+      credentials: 'include',
     })
-    .then((data) => {
-  console.log("Estadisticas recibidas:", data);
+      .then((res) => {
+        if (!res.ok) throw new Error("Error al obtener estadísticas");
+        return res.json();
+      })
+      .then((data) => {
+        console.log("Estadísticas recibidas:", data);
 
-  const normalizado: Record<string, number> = Object.fromEntries(
-    Object.entries(data).map(([k, v]) => [k.toLowerCase().trim(), Number(v)])
-  );
+        const normalizado: Record<string, number> = Object.fromEntries(
+          Object.entries(data).map(([k, v]) => [k.toLowerCase().trim(), Number(v)])
+        );
 
-  setOrdenesPorEstado(normalizado);
-})
+        console.log("Estado normalizado:", normalizado);
+        setOrdenesPorEstado(normalizado);
+      })
+      .catch((err) => {
+        console.error("Error al procesar estadísticas:", err);
+        setOrdenesPorEstado({});
+      });
+  }, []);
 
-    .catch((err) => {
-      console.error("Error al procesar estadísticas:", err);
-      setOrdenesPorEstado({});
-    });
-}, []);
+  const pieData = {
+    labels: ['Por aprobar', 'Aprobadas', 'Finalizadas'],
+    datasets: [
+      {
+        label: 'Órdenes',
+        data: [
+          ordenesPorEstado.por_aprobar ?? 0,
+          ordenesPorEstado.aprobada ?? 0,
+          ordenesPorEstado.finalizada ?? 0
+        ],
+        backgroundColor: ['#facc15', '#4ade80', '#60a5fa'],
+        borderColor: ['#fbbf24', '#22c55e', '#3b82f6'],
+        borderWidth: 1
+      }
+    ]
+  };
 
+  const totalOrdenes = Object.values(ordenesPorEstado).reduce((acc, val) => acc + val, 0);
 
   return (
     <Layout>
       <div className={styles.pageContainer}>
-        <h2 className={styles.titulo}>Perfil del Inversionista</h2>
+        <h2 className={styles.titulo}>Perfil Inversionista</h2>
         <hr className={styles['divider-line']} />
 
         {mensaje && <p className={styles.mensaje}>{mensaje}</p>}
@@ -80,31 +107,48 @@ useEffect(() => {
 
             <div className={styles.panelSecundario}>
               <div className={styles.ordenes}>
-                <h3>Órdenes por estado</h3>
-                <ul className={styles.listaOrdenes}>
-                  <li>Por aprobar: {ordenesPorEstado.por_aprobar ?? 0}</li>
-                  <li>Aprobadas: {ordenesPorEstado.aprobada ?? 0}</li>
-                  <li>Finalizadas: {ordenesPorEstado.finalizada ?? 0}</li>
-                </ul>
-              </div>
-
-              <div className={styles.movimientos}>
-                <div className={styles.saldoGrafico}>
-                  <div className={styles.saldoYBotones}>
-                    <h3 className={styles.saldoTitulo}>Saldo: ${inversionista.saldo}</h3>
-                    <div className={styles.botonesSaldo}>
-                      <button className={styles.actionButton}>Introducir Saldo</button>
-                      <button className={styles.actionButton}>Editar Contrato</button>
-                    </div>
+                <h3 className={styles.tituloOrdenes}>Órdenes</h3>
+                <div className={styles.ordenesContenido}>
+                  <div className={styles.graficoOrdenes}>
+                    {totalOrdenes > 0 ? (
+                      <Pie
+                        data={pieData}
+                        options={{
+                          maintainAspectRatio: false,
+                          plugins: {
+                            legend: { display: false }
+                          }
+                        }}
+                      />
+                    ) : (
+                      <p>No hay datos suficientes para graficar</p>
+                    )}
                   </div>
 
-                  <h4 className={styles.subtituloGrafico}>Movimientos en la semana</h4>
-                  <div className={styles.graficoPlaceholder}>
-                    <p>[grafica]</p>
+                  <div className={styles.listaOrdenes}>
+                    <ul>
+                      <li><span className={styles.porAprobar}>Por aprobar:</span><span className={styles.valor}> {ordenesPorEstado.por_aprobar ?? 0}</span></li>
+                      <li><span className={styles.aprobadas}>Aprobadas:</span><span className={styles.valor}> {ordenesPorEstado.aprobada ?? 0}</span></li>
+                      <li><span className={styles.finalizadas}>Finalizadas:</span><span className={styles.valor}> {ordenesPorEstado.finalizada ?? 0}</span></li>
+                    </ul>
                   </div>
                 </div>
               </div>
-            </div>
+
+                {/* Bloque de saldo */}
+                <div className={styles.movimientos}>
+                  <div className={styles.saldoGrafico}>
+                    <div className={styles.saldoYBotones}>
+                      <h3 className={styles.saldoTitulo}>Saldo: ${inversionista.saldo}</h3>
+                      <div className={styles.botonesSaldo}>
+                        <button className={styles.actionButton}>Introducir Saldo</button>
+                        <button className={styles.actionButton}>Editar Contrato</button>
+                      </div>
+                    </div>
+                    <h4 className={styles.subtituloGrafico}>Movimientos</h4>
+                  </div>
+                </div>
+              </div>
           </div>
         )}
       </div>

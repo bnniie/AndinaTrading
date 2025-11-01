@@ -48,7 +48,7 @@ public class SecurityConfig {
                 return config;
             }))
             .csrf(csrf -> csrf
-                .ignoringRequestMatchers("/api/inversionistas/**")
+                .ignoringRequestMatchers("/api/comisionistas/login","/api/inversionistas/**")
             )
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/comisionistas/login", "/api/inversionistas/**").permitAll()
@@ -59,7 +59,7 @@ public class SecurityConfig {
 
         return http.build();
     }
-
+    
     /**
      * Bean que configura las políticas CORS para permitir solicitudes desde el frontend.
      * - Permite origen http://localhost:3000 (desarrollo local).
