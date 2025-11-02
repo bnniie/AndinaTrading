@@ -39,6 +39,8 @@ body {
               -6px -6px 12px var(--shadow-light);
   width: 300px;
   flex-shrink: 0;
+  flex: 1 1 280px;
+  max-width: 300px;
 }
 
 .datos p {
@@ -99,6 +101,8 @@ body {
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  flex: 2 1 600px;
+  min-width: 600px;
 }
 
 /* Órdenes */
@@ -185,9 +189,10 @@ body {
 /* Contenedor horizontal de los paneles */
 .contenedorPrincipal {
   display: flex;
-  justify-content: center;
+  flex-wrap: wrap;
   gap: 2rem;
   align-items: center;
+  justify-content: center;
 }
 
 /* Agrupador general */
@@ -298,3 +303,31 @@ body {
   font-weight: normal;
   margin-left: 0.5rem;
 }
+
+.subtituloGrafico {
+  color: #d881a3;
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+.graficoMovimientos {
+  height: 200px;
+  padding: 10px;
+  border-radius: 0px;
+}
+
+.graficoMovimientos canvas {
+  max-height: 180px;
+}
+
+.saldoLabel {
+  color: #d881a3;
+  font-weight: bold;
+}
+
+.saldoValor {
+  color: var(--text);
+  font-weight: normal;
+}
+
+

@@ -8,15 +8,18 @@ import org.springframework.stereotype.Service;
 
 import co.edu.unbosque.model.entity.Ciudad;
 import co.edu.unbosque.model.entity.Inversionista;
+import co.edu.unbosque.model.entity.Orden;
 import co.edu.unbosque.model.entity.Pais;
 import co.edu.unbosque.repository.CiudadRepository;
 import co.edu.unbosque.repository.InversionistaRepository;
+import co.edu.unbosque.repository.OrdenRepository;
 import co.edu.unbosque.repository.PaisRepository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
 import java.util.Map;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,7 +38,10 @@ public class InversionistaService {
     private PasswordEncoder passwordEncoder; // Codificador de contraseñas (BCrypt).
 
     @Autowired
-    private InversionistaRepository repo; // Repositorio JPA para inversionistas.
+    private InversionistaRepository repo;// Repositorio JPA para inversionistas.
+    
+    @Autowired
+    private OrdenRepository ordenRepository;
 
     @Autowired
     private CiudadRepository ciudadRepository;
@@ -135,4 +141,20 @@ public class InversionistaService {
             r -> (Long) r[1]
         ));
     } 
+
+    public List<Map<String, Object>> obtenerMovimientosOrdenes(String usuario) {
+        Inversionista inv = repo.findByUsuario(usuario);
+        if (inv == null) return List.of();
+
+        List<Orden> ordenes = ordenRepository.findByInversionista(inv);
+
+        return ordenes.stream()
+            .map(o -> {
+                Map<String, Object> m = new HashMap<>();
+                m.put("fechaCreacion", o.getFechaCreacion().toLocalDate().toString());
+                m.put("precio", o.getValorOrden());
+                return m;
+            })
+            .collect(Collectors.toList());
+    }
 }

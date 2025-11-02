@@ -11,6 +11,8 @@ import co.edu.unbosque.model.DTO.LoginDTO;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+
+import java.util.List;
 import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
@@ -152,5 +154,16 @@ public class InversionistaController {
 
         Map<String, Long> conteo = service.contarOrdenesPorEstado(usuario);
         return ResponseEntity.ok(conteo); 
+    }
+
+    @GetMapping("/ordenes/movimientos")
+    public ResponseEntity<?> movimientosOrdenes(HttpSession session) {
+        String usuario = (String) session.getAttribute("usuario");
+        if (usuario == null) {
+            return ResponseEntity.status(401).body("No hay sesión activa");
+        }
+
+        List<Map<String, Object>> movimientos = service.obtenerMovimientosOrdenes(usuario);
+        return ResponseEntity.ok(movimientos);
     }
 }

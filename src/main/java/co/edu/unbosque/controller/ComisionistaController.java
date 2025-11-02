@@ -7,7 +7,10 @@ import org.springframework.http.HttpStatus;
 import co.edu.unbosque.model.entity.Comisionista;
 import co.edu.unbosque.service.ComisionistaService;
 import co.edu.unbosque.model.DTO.LoginDTO;
+
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import java.util.Map;
 
 /**
  * Controlador REST para gestionar operaciones relacionadas con comisionistas.
@@ -30,11 +33,18 @@ public class ComisionistaController {
      *   - 401 UNAUTHORIZED si las credenciales son incorrectas.
      */
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginDTO login) {
+    public ResponseEntity<?> login(@RequestBody LoginDTO login, HttpSession session) {
         boolean valido = service.validarCredenciales(login.getUsuario(), login.getContrasena());
         if (valido) {
             Comisionista comisionista = service.buscarPorUsuario(login.getUsuario());
-            return ResponseEntity.ok(comisionista);
+
+            session.setAttribute("usuario", comisionista.getUsuario());
+            String dashboardUrl = "http://localhost:8000/dashboard/comisionista?usuario=" + comisionista.getUsuario();
+
+            return ResponseEntity.ok(Map.of(
+                "mensaje", "Login correcto",
+                "dashboard_url", dashboardUrl
+            ));
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");
         }

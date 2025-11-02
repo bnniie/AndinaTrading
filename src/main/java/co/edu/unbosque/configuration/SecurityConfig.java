@@ -19,54 +19,30 @@ import java.util.List;
 @Configuration
 public class SecurityConfig {
 
-    /**
-     * Bean que define el algoritmo de codificación de contraseñas.
-     * Se utiliza BCrypt, recomendado por Spring Security por su robustez.
-     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    /**
-     * Bean que configura la cadena de filtros de seguridad HTTP.
-     * - Habilita CORS.
-     * - Desactiva CSRF (útil para APIs REST).
-     * - Permite acceso público a rutas específicas.
-     * - Requiere autenticación para cualquier otra ruta.
-     * - Desactiva autenticación básica y formularios de login.
-     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .cors(cors -> cors.configurationSource(request -> {
-                CorsConfiguration config = new CorsConfiguration();
-                config.setAllowedOrigins(List.of("http://localhost:3000"));
-                config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-                config.setAllowedHeaders(List.of("*"));
-                config.setAllowCredentials(true);
-                return config;
-            }))
-            .csrf(csrf -> csrf
-                .ignoringRequestMatchers("/api/comisionistas/login","/api/inversionistas/**")
-            )
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/comisionistas/login", "/api/inversionistas/**").permitAll()
+                .requestMatchers("/api/inversionistas/**", "/api/comisionistas/login").permitAll()
                 .anyRequest().authenticated()
+            )
+            .sessionManagement(session -> session
+                .maximumSessions(1)
+                .maxSessionsPreventsLogin(false)
             )
             .httpBasic(httpBasic -> httpBasic.disable())
             .formLogin(form -> form.disable());
 
         return http.build();
     }
-    
-    /**
-     * Bean que configura las políticas CORS para permitir solicitudes desde el frontend.
-     * - Permite origen http://localhost:3000 (desarrollo local).
-     * - Permite métodos HTTP comunes.
-     * - Permite cualquier encabezado.
-     * - Habilita el envío de credenciales (cookies, headers de autenticación).
-     */
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();

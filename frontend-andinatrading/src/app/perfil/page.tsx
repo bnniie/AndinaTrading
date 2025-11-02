@@ -4,20 +4,33 @@ import { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import styles from './ProfilePage.module.css';
 import { User } from 'lucide-react';
-import { Pie } from 'react-chartjs-2';
+import { Pie, Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   ArcElement,
+  LineElement,
+  PointElement,
+  CategoryScale,
+  LinearScale,
   Tooltip,
   Legend
 } from 'chart.js';
 
-ChartJS.register(ArcElement, Tooltip, Legend);
+ChartJS.register(
+  ArcElement,
+  LineElement,
+  PointElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Legend
+);
 
 export default function PerfilPage() {
   const [inversionista, setInversionista] = useState<any>(null);
   const [mensaje, setMensaje] = useState('');
   const [ordenesPorEstado, setOrdenesPorEstado] = useState<Record<string, number>>({});
+  const [movimientos, setMovimientos] = useState<{ fechaCreacion: string; precio: number }[]>([]);
 
   // Obtener perfil del inversionista
   useEffect(() => {
@@ -34,7 +47,7 @@ export default function PerfilPage() {
 
   // Obtener estadísticas de órdenes por estado
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/inversionistas/ordenes/estadisticas`, {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/inversionistas/ordenes/estadisticas`, {
       method: 'GET',
       credentials: 'include',
     })
@@ -43,20 +56,34 @@ export default function PerfilPage() {
         return res.json();
       })
       .then((data) => {
-        console.log("Estadísticas recibidas:", data);
-
         const normalizado: Record<string, number> = Object.fromEntries(
           Object.entries(data).map(([k, v]) => [k.toLowerCase().trim(), Number(v)])
         );
-
-        console.log("Estado normalizado:", normalizado);
         setOrdenesPorEstado(normalizado);
       })
-      .catch((err) => {
-        console.error("Error al procesar estadísticas:", err);
-        setOrdenesPorEstado({});
-      });
+      .catch(() => setOrdenesPorEstado({}));
   }, []);
+
+  // Obtener movimientos de órdenes (fecha + precio)
+  useEffect(() => {
+  fetch(`${process.env.NEXT_PUBLIC_API_URL}/inversionistas/ordenes/movimientos`, {
+    method: 'GET',
+    credentials: 'include'
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error('Error al obtener movimientos');
+      return res.json();
+    })
+    .then((data) => {
+      const ordenesFiltradas = data.map((orden: any) => ({
+        fechaCreacion: orden.fechaCreacion,
+        precio: Number(orden.precio)
+      }));
+      setMovimientos(ordenesFiltradas);
+    })
+    .catch(() => setMovimientos([]));
+}, []);
+
 
   const pieData = {
     labels: ['Por aprobar', 'Aprobadas', 'Finalizadas'],
@@ -71,6 +98,22 @@ export default function PerfilPage() {
         backgroundColor: ['#facc15', '#4ade80', '#60a5fa'],
         borderColor: ['#fbbf24', '#22c55e', '#3b82f6'],
         borderWidth: 1
+      }
+    ]
+  };
+
+  const lineData = {
+    labels: movimientos.map((o) => o.fechaCreacion),
+    datasets: [
+      {
+        label: 'Precio de orden',
+        data: movimientos.map((o) => o.precio),
+        fill: false,
+        borderColor: '#d881a3',
+        backgroundColor: '#d881a3',
+        tension: 0.3,
+        pointRadius: 4,
+        pointHoverRadius: 6
       }
     ]
   };
@@ -135,20 +178,61 @@ export default function PerfilPage() {
                 </div>
               </div>
 
-                {/* Bloque de saldo */}
-                <div className={styles.movimientos}>
-                  <div className={styles.saldoGrafico}>
-                    <div className={styles.saldoYBotones}>
-                      <h3 className={styles.saldoTitulo}>Saldo: ${inversionista.saldo}</h3>
-                      <div className={styles.botonesSaldo}>
-                        <button className={styles.actionButton}>Introducir Saldo</button>
-                        <button className={styles.actionButton}>Editar Contrato</button>
-                      </div>
+              <div className={styles.movimientos}>
+                <div className={styles.saldoGrafico}>
+                  <div className={styles.saldoYBotones}>
+                    <h3 className={styles.saldoTitulo}>
+                      <span className={styles.saldoLabel}>Saldo:</span>{' '}
+                      <span className={styles.saldoValor}>${inversionista.saldo}</span>
+                    </h3>
+                    <div className={styles.botonesSaldo}>
+                      <button className={styles.actionButton}>Introducir Saldo</button>
+                      <button className={styles.actionButton}>Editar Contrato</button>
                     </div>
-                    <h4 className={styles.subtituloGrafico}>Movimientos</h4>
+                  </div>
+                  <div className={styles.graficoMovimientos}>
+                    <h3 className={styles.subtituloGrafico}>Movimientos Recientes</h3>
+                  <Line
+                    data={lineData}
+                    options={{
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      plugins: {
+                        legend: { display: false }
+                      },
+                      scales: {
+                        x: {
+                          title: { display: true, text: 'Fecha (DD-MM)' },
+                          ticks: {
+                    callback: function (value, index) {
+                      const fecha = movimientos[index]?.fechaCreacion;
+                      if (!fecha) return '';
+                      const date = new Date(fecha);
+                      const dia = String(date.getDate()).padStart(2, '0');
+                      const mes = String(date.getMonth() + 1).padStart(2, '0');
+                      return `${dia}/${mes}`;
+                    },
+                    color: '#000',
+                    font: { size: 10 }
+                  },
+                          grid: { display: false }
+                        },
+                        y: {
+                          title: { display: true, text: 'Precio ($)' },
+                          ticks: {
+                            callback: (value) => `$${value}`,
+                            color: '#000',
+                            font: { size: 10 }
+                          }
+                        }
+                      }
+                    }}
+                    height={180}
+                    />
                   </div>
                 </div>
               </div>
+            </div>
           </div>
         )}
       </div>

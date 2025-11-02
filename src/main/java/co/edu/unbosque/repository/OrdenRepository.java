@@ -8,6 +8,7 @@ import co.edu.unbosque.model.entity.Inversionista;
 import java.util.List;
 
 @Repository
+
 public interface OrdenRepository extends JpaRepository<Orden, Long> {
 
     List<Orden> findByInversionista(Inversionista inversionista);
