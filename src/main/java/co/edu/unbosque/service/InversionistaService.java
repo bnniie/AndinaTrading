@@ -157,4 +157,14 @@ public class InversionistaService {
             })
             .collect(Collectors.toList());
     }
+
+    public boolean actualizarUsuarioYTelefono(String usuarioActual, String nuevoUsuario, String nuevoTelefono) {
+        Inversionista inversionista = repo.findByUsuario(usuarioActual);
+        if (inversionista == null) return false;
+
+        inversionista.setUsuario(nuevoUsuario);
+        inversionista.setTelefono(nuevoTelefono);
+        repo.save(inversionista);
+        return true;
+    }
 }

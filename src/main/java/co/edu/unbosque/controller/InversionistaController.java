@@ -166,4 +166,23 @@ public class InversionistaController {
         List<Map<String, Object>> movimientos = service.obtenerMovimientosOrdenes(usuario);
         return ResponseEntity.ok(movimientos);
     }
+
+    @PutMapping("/actualizar-contacto")
+    public ResponseEntity<?> actualizarContacto(@RequestBody Map<String, String> datos, HttpSession session) {
+        String usuarioActual = (String) session.getAttribute("usuario");
+        if (usuarioActual == null) {
+            return ResponseEntity.status(401).body("No hay sesión activa");
+        }
+
+        String nuevoUsuario = datos.get("usuario");
+        String nuevoTelefono = datos.get("telefono");
+
+        boolean actualizado = service.actualizarUsuarioYTelefono(usuarioActual, nuevoUsuario, nuevoTelefono);
+        if (actualizado) {
+            session.setAttribute("usuario", nuevoUsuario); // actualiza la sesión si el usuario cambió
+            return ResponseEntity.ok("Datos actualizados correctamente");
+        } else {
+            return ResponseEntity.status(400).body("No se pudo actualizar los datos");
+        }
+    }
 }

@@ -26,11 +26,17 @@ ChartJS.register(
   Legend
 );
 
+import { useRouter } from 'next/navigation';
+import EditarPerfil from './EditarPerfilModal';
+
 export default function PerfilPage() {
   const [inversionista, setInversionista] = useState<any>(null);
   const [mensaje, setMensaje] = useState('');
   const [ordenesPorEstado, setOrdenesPorEstado] = useState<Record<string, number>>({});
   const [movimientos, setMovimientos] = useState<{ fechaCreacion: string; precio: number }[]>([]);
+  const [mostrarModal, setMostrarModal] = useState(false);
+  const router = useRouter();
+
 
   // Obtener perfil del inversionista
   useEffect(() => {
@@ -120,6 +126,34 @@ export default function PerfilPage() {
 
   const totalOrdenes = Object.values(ordenesPorEstado).reduce((acc, val) => acc + val, 0);
 
+  const handleGuardarPerfil = async (datosActualizados: { usuario: string; telefono: string }) => {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/inversionistas/actualizar-contacto`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(datosActualizados)
+    });
+
+    if (response.ok) {
+      setInversionista((prev: any) => ({
+        ...prev,
+        ...datosActualizados
+      }));
+
+      setMostrarModal(false);
+      router.push('/perfil');
+    } else {
+      console.error('❌ Error al actualizar contacto');
+      setMensaje('❌ No se pudo actualizar el perfil');
+    }
+  } catch (error) {
+    console.error('❌ Error de conexión:', error);
+    setMensaje('❌ Error de conexión con el servidor');
+  }
+};
+
+
   return (
     <Layout>
       <div className={styles.pageContainer}>
@@ -144,7 +178,9 @@ export default function PerfilPage() {
               <p><strong>Usuario:</strong> {inversionista.usuario}</p>
               <p><strong>Teléfono:</strong> {inversionista.telefono}</p>
               <div className={styles.botonEditar}>
-                <button className={styles.actionButton}>Editar</button>
+                <button className={styles.actionButton} onClick={() => setMostrarModal(true)}>
+                  Editar
+                </button>
               </div>
             </div>
 
@@ -230,6 +266,14 @@ export default function PerfilPage() {
                     height={180}
                     />
                   </div>
+
+                  {mostrarModal && inversionista && (
+                    <EditarPerfil
+                      inversionista={inversionista}
+                      onClose={() => setMostrarModal(false)}
+                      onSave={handleGuardarPerfil}
+                    />
+                  )}
                 </div>
               </div>
             </div>
