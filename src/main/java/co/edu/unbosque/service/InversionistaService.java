@@ -50,8 +50,6 @@ public class InversionistaService {
     @Autowired
     private PaisRepository paisRepository;
 
-
-
     /**
      * Registra un nuevo inversionista si no existe previamente por documento o usuario.
      * Encripta la contraseña antes de guardar.
@@ -197,6 +195,4 @@ public class InversionistaService {
         repo.save(inversionista);
         return true;
     }
-
-
 }
