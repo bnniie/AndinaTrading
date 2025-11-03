@@ -28,6 +28,8 @@ ChartJS.register(
 
 import { useRouter } from 'next/navigation';
 import EditarPerfil from './EditarPerfilModal';
+import IntroducirSaldoModal from './IntroducirSaldoModal';
+import EditarContratoModal from './EditarContratoModal';
 
 export default function PerfilPage() {
   const [inversionista, setInversionista] = useState<any>(null);
@@ -35,8 +37,10 @@ export default function PerfilPage() {
   const [ordenesPorEstado, setOrdenesPorEstado] = useState<Record<string, number>>({});
   const [movimientos, setMovimientos] = useState<{ fechaCreacion: string; precio: number }[]>([]);
   const [mostrarModal, setMostrarModal] = useState(false);
+  const [mostrarSaldoModal, setMostrarSaldoModal] = useState(false);
+  const [mostrarContratoModal, setMostrarContratoModal] = useState(false);
+  const [contrato, setContrato] = useState<{ porcentajeComision: number; duracionMeses: number } | null>(null);
   const router = useRouter();
-
 
   // Obtener perfil del inversionista
   useEffect(() => {
@@ -89,7 +93,6 @@ export default function PerfilPage() {
     })
     .catch(() => setMovimientos([]));
 }, []);
-
 
   const pieData = {
     labels: ['Por aprobar', 'Aprobadas', 'Finalizadas'],
@@ -149,6 +152,73 @@ export default function PerfilPage() {
     }
   } catch (error) {
     console.error('❌ Error de conexión:', error);
+    setMensaje('❌ Error de conexión con el servidor');
+  }
+};
+
+const handleGuardarSaldo = async (montoAdicional: number) => {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/inversionistas/actualizar-saldo`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ saldo: montoAdicional })
+    });
+
+    if (response.ok) {
+      setInversionista((prev: any) => ({
+        ...prev,
+        saldo: prev.saldo + montoAdicional
+      }));
+      setMostrarSaldoModal(false);
+    } else {
+      setMensaje('❌ No se pudo actualizar el saldo');
+    }
+  } catch (error) {
+    setMensaje('❌ Error de conexión con el servidor');
+  }
+};
+
+useEffect(() => {
+  const obtenerContrato = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/inversionistas/contrato`, {
+        method: 'GET',
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setContrato({
+        porcentajeComision: data.porcentajeComision,
+        duracionMeses: data.duracionMeses
+      });
+      }
+    } catch (error) {
+      console.error('Error al obtener contrato:', error);
+    }
+  };
+
+  obtenerContrato();
+}, []);
+
+  const handleGuardarContrato = async ({ porcentaje, duracion }: { porcentaje: number; duracion: number }) => {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/inversionistas/editar-contrato`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ porcentaje, duracion })
+    });
+
+    if (response.ok) {
+      setContrato({ porcentajeComision: porcentaje, duracionMeses: duracion });
+      setMostrarContratoModal(false);
+    } else {
+      setMensaje('❌ No se pudo actualizar el contrato');
+    }
+  } catch (error) {
+    console.error('❌ Error al actualizar contrato:', error);
     setMensaje('❌ Error de conexión con el servidor');
   }
 };
@@ -222,8 +292,8 @@ export default function PerfilPage() {
                       <span className={styles.saldoValor}>${inversionista.saldo}</span>
                     </h3>
                     <div className={styles.botonesSaldo}>
-                      <button className={styles.actionButton}>Introducir Saldo</button>
-                      <button className={styles.actionButton}>Editar Contrato</button>
+                      <button className={styles.actionButton} onClick={() => setMostrarSaldoModal(true)}>Introducir Saldo</button>
+                      <button onClick={() => setMostrarContratoModal(true)} className={styles.actionButton}>Editar Contrato</button>
                     </div>
                   </div>
                   <div className={styles.graficoMovimientos}>
@@ -273,6 +343,23 @@ export default function PerfilPage() {
                       onClose={() => setMostrarModal(false)}
                       onSave={handleGuardarPerfil}
                     />
+                  )}
+
+                  {mostrarSaldoModal && (
+                    <IntroducirSaldoModal
+                      saldoActual={inversionista.saldo}
+                      onClose={() => setMostrarSaldoModal(false)}
+                      onSave={handleGuardarSaldo}
+                    />
+                  )}
+
+                  {mostrarContratoModal && (
+                  <EditarContratoModal
+                    porcentajeInicial={contrato?.porcentajeComision ?? 0}
+                    duracionInicial={contrato?.duracionMeses ?? 12}
+                    onClose={() => setMostrarContratoModal(false)}
+                    onSave={handleGuardarContrato}
+                  />
                   )}
                 </div>
               </div>

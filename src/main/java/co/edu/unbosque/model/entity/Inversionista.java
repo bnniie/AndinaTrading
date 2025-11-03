@@ -48,6 +48,10 @@ public class Inversionista {
 
     private Double saldo;
 
+    @OneToOne(mappedBy = "inversionista", cascade = CascadeType.ALL)
+    private Contrato contrato;
+
+
     public Long getId() {
         return id;
     }
@@ -134,5 +138,13 @@ public class Inversionista {
 
     public void setSaldo(Double saldo) {
         this.saldo = saldo;
+    }
+
+    public Contrato getContrato() {
+        return contrato;
+    }
+
+    public void setContrato(Contrato contrato) {
+        this.contrato = contrato;
     }
 }

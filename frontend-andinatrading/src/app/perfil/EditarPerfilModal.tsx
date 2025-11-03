@@ -23,7 +23,10 @@ export default function EditarPerfilModal({
   onClose,
   onSave
 }: EditarPerfilModalProps) {
+
   const router = useRouter();
+  const [errorTelefono, setErrorTelefono] = useState('');
+
   const [formData, setFormData] = useState<Inversionista>({
     usuario: inversionista.usuario,
     telefono: inversionista.telefono
@@ -38,27 +41,37 @@ export default function EditarPerfilModal({
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/inversionistas/actualizar-contacto`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify(formData)
-      });
+  const telefonoSinPrefijo = formData.telefono.replace(/^\+?\d{1,3}/, '');
+  const esValido = /^\d{9,10}$/.test(telefonoSinPrefijo);
 
-      if (response.ok) {
-        onSave(formData);
-        onClose();
-        router.push('/perfil');
-      } else {
-        console.error('Error al actualizar contacto');
-      }
-    } catch (error) {
-      console.error('Error de conexión:', error);
+  if (!esValido) {
+    setErrorTelefono('❌ El teléfono debe tener entre 9 o 10 dígitos numéricos');
+    return;
+  }
+
+  setErrorTelefono('');
+
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/inversionistas/actualizar-contacto`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(formData)
+    });
+
+    if (response.ok) {
+      onSave(formData);
+      onClose();
+      router.push('/perfil');
+    } else {
+      console.error('Error al actualizar contacto');
     }
-  };
+  } catch (error) {
+    console.error('Error de conexión:', error);
+  }
+};
 
   return (
     <div className={styles.overlay}>
@@ -78,7 +91,7 @@ export default function EditarPerfilModal({
               pattern="[A-Za-z0-9]{4,20}"
               className={styles.input}
             />
-            <small className={styles.helper}>Debe tener entre 4 y 20 caracteres alfanuméricos</small>
+            <small className={styles.helper}>Debe tener entre 4 o 20 caracteres alfanuméricos</small>
 
             <PhoneInput
               country={'co'}
@@ -86,9 +99,10 @@ export default function EditarPerfilModal({
               value={formData.telefono}
               onChange={handlePhoneChange}
               inputClass={styles.input}
-              placeholder="Teléfono"
+              placeholder="Teléfono"             
             />
-            <small className={styles.helper}>Ingresa tu número telefónico</small>
+            <small className={styles.helper}>Debe contener entre 9 o 10 dígitos numéricos</small>
+            {errorTelefono && <p className={styles.error}>{errorTelefono}</p>}
           </div>
 
           <div className={styles.buttonRow}>

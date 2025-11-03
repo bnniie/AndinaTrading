@@ -7,6 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import co.edu.unbosque.model.entity.Ciudad;
+import co.edu.unbosque.model.entity.Contrato;
 import co.edu.unbosque.model.entity.Inversionista;
 import co.edu.unbosque.model.entity.Orden;
 import co.edu.unbosque.model.entity.Pais;
@@ -167,4 +168,35 @@ public class InversionistaService {
         repo.save(inversionista);
         return true;
     }
+
+    public boolean actualizarSaldo(String usuario, Double montoAdicional) {
+        Inversionista inversionista = repo.findByUsuario(usuario);
+        if (inversionista == null) return false;
+
+        double saldoActual = inversionista.getSaldo();
+        inversionista.setSaldo(saldoActual + montoAdicional);
+        repo.save(inversionista);
+        return true;
+    }
+
+    public boolean actualizarContrato(String usuario, Double porcentaje, Integer duracion) {
+        Inversionista inversionista = repo.findByUsuario(usuario);
+        if (inversionista == null) return false;
+
+        Contrato contrato = inversionista.getContrato();
+
+        if (contrato == null) {
+            contrato = new Contrato();
+            contrato.setInversionista(inversionista);
+        }
+
+        contrato.setPorcentajeComision(porcentaje);
+        contrato.setDuracionMeses(duracion);
+        inversionista.setContrato(contrato);
+
+        repo.save(inversionista);
+        return true;
+    }
+
+
 }

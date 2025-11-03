@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import co.edu.unbosque.model.entity.Inversionista;
 import co.edu.unbosque.service.InversionistaService;
 import co.edu.unbosque.model.DTO.LoginDTO;
+import co.edu.unbosque.model.DTO.ContratoDTO;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -179,10 +180,36 @@ public class InversionistaController {
 
         boolean actualizado = service.actualizarUsuarioYTelefono(usuarioActual, nuevoUsuario, nuevoTelefono);
         if (actualizado) {
-            session.setAttribute("usuario", nuevoUsuario); // actualiza la sesión si el usuario cambió
+            session.setAttribute("usuario", nuevoUsuario);
             return ResponseEntity.ok("Datos actualizados correctamente");
         } else {
             return ResponseEntity.status(400).body("No se pudo actualizar los datos");
         }
+    }
+
+    @PutMapping("/actualizar-saldo")
+    public ResponseEntity<?> actualizarSaldo(@RequestBody Map<String, Object> datos, HttpSession session) {
+        String usuario = (String) session.getAttribute("usuario");
+        if (usuario == null) {
+            return ResponseEntity.status(401).body("No hay sesión activa");
+        }
+
+        Double nuevoSaldo = Double.valueOf(datos.get("saldo").toString());
+        boolean actualizado = service.actualizarSaldo(usuario, nuevoSaldo);
+
+        if (actualizado) {
+            return ResponseEntity.ok("Saldo actualizado correctamente");
+        } else {
+            return ResponseEntity.status(400).body("No se pudo actualizar el saldo");
+        }
+    }
+
+    @PutMapping("/editar-contrato")
+    public ResponseEntity<?> editarContrato(@RequestBody ContratoDTO datos, HttpSession session) {
+        String usuario = (String) session.getAttribute("usuario");
+        if (usuario == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+        boolean actualizado = service.actualizarContrato(usuario, datos.getPorcentaje(), datos.getDuracion());
+        return actualizado ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
 }
