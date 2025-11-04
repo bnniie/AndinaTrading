@@ -31,16 +31,15 @@ import java.util.stream.Collectors;
 @Service
 public class InversionistaService {
 
-    
     @PersistenceContext
     private EntityManager entityManager;
 
     @Autowired
-    private PasswordEncoder passwordEncoder; // Codificador de contraseñas (BCrypt).
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private InversionistaRepository repo;// Repositorio JPA para inversionistas.
-    
+    private InversionistaRepository repo;
+
     @Autowired
     private OrdenRepository ordenRepository;
 
@@ -52,56 +51,47 @@ public class InversionistaService {
 
     /**
      * Registra un nuevo inversionista si no existe previamente por documento o usuario.
-     * Encripta la contraseña antes de guardar.
+     * Asocia ciudad y país, y encripta la contraseña antes de guardar.
+     *
      * @param inversionista datos del nuevo usuario.
-     * @return true si el registro fue exitoso, false si ya existe.
+     * @param ciudadNombre nombre de la ciudad asociada.
+     * @return true si el registro fue exitoso, false si ya existe o la ciudad no es válida.
      */
     public boolean registrar(Inversionista inversionista, String ciudadNombre) {
-        // Buscar la ciudad por nombre
         Ciudad ciudad = ciudadRepository.findByNombre(ciudadNombre);
-        if (ciudad == null) {
-            return false; // ciudad no válida
-        }
+        if (ciudad == null) return false;
 
-        // Obtener el país asociado a la ciudad
         Pais pais = ciudad.getPais();
-
-        // Asignar ciudad y país como objetos
         inversionista.setCiudad(ciudad);
         inversionista.setPais(pais);
 
-        // Validar si ya existe por documento o usuario
         if (repo.existsByDocumentoIdentidad(inversionista.getDocumentoIdentidad()) ||
             repo.existsByUsuario(inversionista.getUsuario())) {
             return false;
         }
 
-        String contraseñaEncriptada = passwordEncoder.encode(inversionista.getContrasena());
-        inversionista.setContrasena(contraseñaEncriptada);
-
+        inversionista.setContrasena(passwordEncoder.encode(inversionista.getContrasena()));
         repo.save(inversionista);
         return true;
     }
 
     /**
      * Valida las credenciales de inicio de sesión.
-     * Compara la contraseña ingresada con la almacenada encriptada.
+     *
      * @param usuario nombre de usuario.
      * @param contrasena contraseña en texto plano.
      * @return true si las credenciales son válidas, false en caso contrario.
      */
     public boolean validarCredenciales(String usuario, String contrasena) {
         Inversionista inversionista = repo.findByUsuario(usuario);
-        if (inversionista == null) {
-            return false;
-        }
-        return passwordEncoder.matches(contrasena, inversionista.getContrasena());
+        return inversionista != null && passwordEncoder.matches(contrasena, inversionista.getContrasena());
     }
 
     /**
      * Busca un inversionista por su nombre de usuario.
+     *
      * @param usuario nombre de usuario.
-     * @return instancia de Inversionista si existe, null si no se encuentra.
+     * @return instancia de {@link Inversionista} si existe, o null si no se encuentra.
      */
     public Inversionista buscarPorUsuario(String usuario) {
         return repo.findByUsuario(usuario);
@@ -109,21 +99,26 @@ public class InversionistaService {
 
     /**
      * Actualiza la contraseña de un inversionista.
-     * Encripta la nueva contraseña antes de guardar.
+     *
      * @param usuario nombre de usuario.
      * @param nuevaContrasena nueva contraseña en texto plano.
      * @return true si se actualizó correctamente, false si el usuario no existe.
      */
     public boolean actualizarContrasena(String usuario, String nuevaContrasena) {
         Inversionista inversionista = repo.findByUsuario(usuario);
-        if (inversionista != null) {
-            inversionista.setContrasena(passwordEncoder.encode(nuevaContrasena));
-            repo.save(inversionista);
-            return true;
-        }
-        return false;
+        if (inversionista == null) return false;
+
+        inversionista.setContrasena(passwordEncoder.encode(nuevaContrasena));
+        repo.save(inversionista);
+        return true;
     }
 
+    /**
+     * Cuenta la cantidad de órdenes por estado asociadas a un inversionista.
+     *
+     * @param usuario nombre de usuario.
+     * @return mapa con el estado como clave y el conteo como valor.
+     */
     public Map<String, Long> contarOrdenesPorEstado(String usuario) {
         Inversionista inv = repo.findByUsuario(usuario);
         if (inv == null) return Map.of();
@@ -139,8 +134,15 @@ public class InversionistaService {
             r -> ((String) r[0]).toLowerCase().trim(),
             r -> (Long) r[1]
         ));
-    } 
+    }
 
+    /**
+     * Obtiene una lista de movimientos de órdenes del inversionista autenticado.
+     * Cada movimiento incluye la fecha de creación y el valor de la orden.
+     *
+     * @param usuario nombre de usuario.
+     * @return lista de mapas con los campos 'fechaCreacion' y 'precio'.
+     */
     public List<Map<String, Object>> obtenerMovimientosOrdenes(String usuario) {
         Inversionista inv = repo.findByUsuario(usuario);
         if (inv == null) return List.of();
@@ -157,6 +159,14 @@ public class InversionistaService {
             .collect(Collectors.toList());
     }
 
+    /**
+     * Actualiza el nombre de usuario y teléfono de un inversionista.
+     *
+     * @param usuarioActual usuario actual.
+     * @param nuevoUsuario nuevo nombre de usuario.
+     * @param nuevoTelefono nuevo número de teléfono.
+     * @return true si se actualizó correctamente, false si el usuario no existe.
+     */
     public boolean actualizarUsuarioYTelefono(String usuarioActual, String nuevoUsuario, String nuevoTelefono) {
         Inversionista inversionista = repo.findByUsuario(usuarioActual);
         if (inversionista == null) return false;
@@ -167,22 +177,35 @@ public class InversionistaService {
         return true;
     }
 
+    /**
+     * Actualiza el saldo del inversionista sumando un monto adicional.
+     *
+     * @param usuario nombre de usuario.
+     * @param montoAdicional monto a agregar al saldo actual.
+     * @return true si se actualizó correctamente, false si el usuario no existe.
+     */
     public boolean actualizarSaldo(String usuario, Double montoAdicional) {
         Inversionista inversionista = repo.findByUsuario(usuario);
         if (inversionista == null) return false;
 
-        double saldoActual = inversionista.getSaldo();
-        inversionista.setSaldo(saldoActual + montoAdicional);
+        inversionista.setSaldo(inversionista.getSaldo() + montoAdicional);
         repo.save(inversionista);
         return true;
     }
 
+    /**
+     * Actualiza o crea el contrato asociado al inversionista.
+     *
+     * @param usuario nombre de usuario.
+     * @param porcentaje nuevo porcentaje de comisión.
+     * @param duracion nueva duración en meses.
+     * @return true si se actualizó correctamente, false si el usuario no existe.
+     */
     public boolean actualizarContrato(String usuario, Double porcentaje, Integer duracion) {
         Inversionista inversionista = repo.findByUsuario(usuario);
         if (inversionista == null) return false;
 
         Contrato contrato = inversionista.getContrato();
-
         if (contrato == null) {
             contrato = new Contrato();
             contrato.setInversionista(inversionista);

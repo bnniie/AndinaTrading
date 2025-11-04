@@ -1,23 +1,23 @@
+/* Variables globales para colores y sombras */
 :root {
-  /* Paleta de colores base */
-  --bg: #d4d8f0;               /* Fondo general */
-  --text: #232946;             /* Color principal del texto */
-  --accent: #d881a3;           /* Color de acento para elementos destacados */
-  --shadow-dark: rgba(0, 0, 0, 0.15);     /* Sombra oscura para profundidad */
+  --bg: #d4d8f0; /* Color de fondo principal del layout */
+  --text: #232946; /* Color base para textos y íconos */
+  --accent: #d881a3; /* Color de acento para elementos destacados */
+  --shadow-dark: rgba(0, 0, 0, 0.15); /* Sombra oscura para profundidad */
   --shadow-light: rgba(255, 255, 255, 0.8); /* Sombra clara para efecto neumórfico */
 }
 
-/* Contenedor general del layout */
+/* Contenedor general del layout de página */
 .layout {
   display: flex;
   height: 100vh;
   width: 100vw;
-  background: var(--bg);
-  font-family: "Segoe UI", sans-serif;
-  overflow: hidden;
+  background: var(--bg); /* Aplica fondo global */
+  font-family: "Segoe UI", sans-serif; /* Fuente principal */
+  overflow: hidden; /* Evita scroll general */
 }
 
-/* Sidebar izquierdo */
+/* Sidebar izquierdo con navegación vertical */
 .div1 {
   width: 80px;
   height: 100vh;
@@ -28,27 +28,27 @@
   justify-content: space-between;
   box-shadow:
     8px 8px 16px var(--shadow-dark),
-    -8px -8px 16px var(--shadow-light); /* efecto neumórfico */
+    -8px -8px 16px var(--shadow-light); /* Efecto neumórfico */
 }
 
-/* Logo o ícono superior */
+/* Logotipo o ícono superior */
 .icon-pic {
   width: 46px;
   height: 46px;
-  border-radius: 50%;
+  border-radius: 50%; /* Forma circular */
   margin-top: 1rem;
-  object-fit: cover;
+  object-fit: cover; /* Ajuste de imagen */
 }
 
-/* Grupo de burbujas de navegación */
+/* Grupo de botones tipo burbuja para navegación */
 .menu-bubbles {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1.5rem; /* Espaciado entre burbujas */
 }
 
-/* Botón burbuja genérico */
+/* Estilo base para cada burbuja de navegación */
 .bubble {
   width: 50px;
   height: 50px;
@@ -59,14 +59,14 @@
   background: var(--bg);
   box-shadow:
     5px 5px 7px var(--shadow-dark),
-    -5px -5px 7px var(--shadow-light);
+    -5px -5px 7px var(--shadow-light); /* Sombra neumórfica */
   color: var(--text);
   font-size: 1.5rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s ease; /* Animación suave */
 }
 
-/* Animación al pasar el mouse */
+/* Animación al pasar el cursor sobre la burbuja */
 .bubble:hover {
   transform: translateY(-3px);
   box-shadow:
@@ -74,7 +74,7 @@
     -2px -2px 5px var(--shadow-light);
 }
 
-/* Estado activo de la burbuja */
+/* Estado activo de la burbuja seleccionada */
 .bubble.active {
   box-shadow:
     inset 5px 5px 7px var(--shadow-dark),
@@ -82,6 +82,7 @@
   transform: translateY(2px);
 }
 
+/* Mantiene el estilo activo al hacer hover */
 .bubble.active:hover {
   box-shadow:
     inset 5px 5px 7px var(--shadow-dark),
@@ -89,21 +90,21 @@
   transform: translateY(2px);
 }
 
-/* Contenedor de la burbuja de logout */
+/* Contenedor inferior para botón de logout */
 .logout-bubble {
   margin-bottom: 1.5rem;
 }
 
-/* Estilo especial para el botón de cerrar sesión */
+/* Estilo especial para burbuja de cierre de sesión */
 .logout {
-  color: #462325;
-  background: #e2a9a9;
+  color: #462325; /* Color de texto más oscuro */
+  background: #e2a9a9; /* Fondo rosado suave */
   box-shadow:
     5px 5px 10px var(--shadow-dark),
     -5px -5px 10px var(--shadow-light);
 }
 
-/* Animación al pasar el mouse sobre logout */
+/* Animación al pasar el cursor sobre logout */
 .logout:hover {
   transform: scale(1.05);
   box-shadow:

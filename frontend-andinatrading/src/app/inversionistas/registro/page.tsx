@@ -8,11 +8,17 @@ import 'react-phone-input-2/lib/style.css';
 
 import styles from './RegistroPage.module.css';
 
+/**
+ * Componente de registro para nuevos inversionistas en Andina Trading.
+ * Captura datos personales, ubicación, credenciales y realiza validaciones antes de enviar al backend.
+ */
 export default function RegistroPage() {
   const router = useRouter();
 
+  // Lista de países disponibles
   const paises = ['Colombia', 'Ecuador', 'Perú', 'Venezuela'];
 
+  // Ciudades disponibles por país
   const ciudadesPorPais: Record<string, string[]> = {
     Colombia: ['Bogotá', 'Medellín', 'Cali', 'Barranquilla', 'Cartagena', 'Bucaramanga', 'Pereira', 'Manizales', 'Santa Marta', 'Cúcuta'],
     Ecuador: ['Quito', 'Guayaquil', 'Cuenca', 'Machala', 'Manta', 'Loja', 'Portoviejo', 'Ambato', 'Esmeraldas', 'Ibarra'],
@@ -20,6 +26,7 @@ export default function RegistroPage() {
     Venezuela: ['Caracas', 'Maracaibo', 'Valencia', 'Barquisimeto', 'Mérida', 'San Cristóbal', 'Puerto La Cruz', 'Ciudad Guayana', 'Maracay', 'Cumaná']
   };
 
+   // Estado del formulario
   const [form, setForm] = useState({
     nombre: '',
     apellido: '',
@@ -32,15 +39,22 @@ export default function RegistroPage() {
     contrasena: ''
   });
 
+  // Estado de confirmación de contraseña y visibilidad
   const [confirmarContrasena, setConfirmarContrasena] = useState('');
   const [mostrarContrasena, setMostrarContrasena] = useState(false);
   const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
   const [mensaje, setMensaje] = useState('');
 
+   /**
+   * Maneja los cambios en los campos del formulario.
+   */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  /**
+   * Envía el formulario al backend si las contraseñas coinciden.
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -82,12 +96,16 @@ export default function RegistroPage() {
     }
   };
 
+  /**
+   * Redirige al usuario al inicio.
+   */
   const volverInicio = () => {
     router.push('/');
   };
 
   return (
     <main className={styles.container}>
+      {/* Panel izquierdo con branding */}
       <section className={styles.left}>
         <Image
           src="/static/img/icon.png"
@@ -102,6 +120,7 @@ export default function RegistroPage() {
         </p>
       </section>
 
+      {/* Panel derecho con formulario */}
       <section className={styles.right}>
         <form className={styles.formGrid} onSubmit={handleSubmit}>
           <div className={styles.column}>
@@ -116,6 +135,7 @@ export default function RegistroPage() {
             />
             <small className={styles.helper}>Ingresa tus nombres completos</small>
 
+            {/* Campo apellido */}
             <input
               type="text"
               name="apellido"
@@ -127,6 +147,7 @@ export default function RegistroPage() {
             />
             <small className={styles.helper}>Ingresa tus apellidos completos</small>
 
+            {/* Campo documento */}
             <input
               type="text"
               name="documentoIdentidad"
@@ -141,6 +162,7 @@ export default function RegistroPage() {
             />
             <small className={styles.helper}>Debe contener entre 6 y 12 dígitos numéricos</small>
 
+            {/* Campo país */}
             <select
               name="pais"
               value={form.pais}
@@ -157,6 +179,7 @@ export default function RegistroPage() {
             </select>
             <small className={styles.helper}>País de residencia</small>
 
+            {/* Campo ciudad */}
             <select
               name="ciudad"
               value={form.ciudad}
@@ -173,7 +196,9 @@ export default function RegistroPage() {
             <small className={styles.helper}>Ciudad donde resides actualmente</small>
           </div>
 
+          {/* Columna derecha del formulario */}
           <div className={styles.column}>
+            {/* Campo correo */}
             <input
               type="email"
               name="correo"
@@ -185,6 +210,7 @@ export default function RegistroPage() {
             />
             <small className={styles.helper}>Ejemplo: usuario@dominio.com</small>
 
+            {/* Campo teléfono */}
             <PhoneInput
               country={'co'}
               onlyCountries={['co', 'pe', 've', 'ec']}
@@ -195,6 +221,7 @@ export default function RegistroPage() {
             />
             <small className={styles.helper}>Ingresa tu número telefónico</small>
 
+            {/* Campo usuario */}
             <input
               type="text"
               name="usuario"
@@ -209,6 +236,7 @@ export default function RegistroPage() {
             />
             <small className={styles.helper}>Debe tener entre 4 y 20 caracteres alfanuméricos</small>
 
+            {/* Campo contraseña */}
             <div className={styles.passwordWrapper}>
               <input
                 type={mostrarContrasena ? 'text' : 'password'}
@@ -226,6 +254,7 @@ export default function RegistroPage() {
             </div>
             <small className={styles.helper}>Debe tener entre 6 y 20 caracteres con letra, número y símbolo</small>
 
+            {/* Campo confirmación */}
             <div className={styles.passwordWrapper}>
               <input
                 type={mostrarConfirmacion ? 'text' : 'password'}

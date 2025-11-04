@@ -88,21 +88,22 @@ body {
   background: #e1e5fd;
   color: #232946;
   box-shadow: 
-    6px 6px 12px rgba(0, 0, 0, 0.1), /* sombra inferior derecha */
-    -6px -6px 12px rgba(255, 255, 255, 0.8); /* sombra superior izquierda */
+    6px 6px 12px rgba(0, 0, 0, 0.1),
+    -6px -6px 12px rgba(255, 255, 255, 0.8);
   border: 1px solid rgba(0, 0, 0, 0.05);
   cursor: pointer;
-  transition: all 0.3s ease; /* animación suave al interactuar */
+  transition: all 0.3s ease;
 }
 
 /* Estilo al pasar el cursor sobre el botón */
 .actionButton:hover {
   box-shadow: 
-    inset 6px 6px 12px rgba(0, 0, 0, 0.1), /* sombra interna oscura */
-    inset -6px -6px 12px rgba(255, 255, 255, 0.8); /* sombra interna clara */
-  color: var(--accent); /* cambia el color del texto al color de acento */
+    inset 6px 6px 12px rgba(0, 0, 0, 0.1),
+    inset -6px -6px 12px rgba(255, 255, 255, 0.8);
+  color: var(--accent);
 }
 
+/* Grupo de campos de formulario */
 .formGroup {
   margin-bottom: 1.2rem;
   width: 260px;
@@ -112,12 +113,14 @@ body {
   color: var(--text);
 }
 
+/* Contenedor para campos de contraseña con ícono */
 .passwordWrapper {
   position: relative;
   display: flex;
   align-items: center;
 }
 
+/* Estilo del input dentro del contenedor de contraseña */
 .passwordWrapper input {
   width: 100%;
   padding: 0.8rem 2.5rem 0.8rem 0.8rem;
@@ -131,15 +134,22 @@ body {
     -6px -6px 12px var(--shadow-light);
 }
 
-.togglePassword {
+/* Ícono para mostrar/ocultar contraseña */
+.togglePassword,
+.eyeIcon {
   position: absolute;
   right: 0.8rem;
+  top: 50%;
+  transform: translateY(-50%);
   cursor: pointer;
   font-size: 1.2rem;
   color: var(--accent);
   user-select: none;
+  display: flex;
+  align-items: center;
 }
 
+/* Distribución del formulario en columnas */
 .formGrid {
   display: flex;
   flex-wrap: wrap;
@@ -149,6 +159,7 @@ body {
   max-width: 600px;
 }
 
+/* Columna del formulario */
 .column {
   display: flex;
   flex-direction: column;
@@ -157,30 +168,20 @@ body {
   min-width: 240px;
 }
 
+/* Estilo base para inputs */
 .input {
   padding: 0.8rem 1rem;
   border-radius: 10px;
   border: 1px solid rgba(0, 0, 0, 0.1);
   background-color: #fff;
   font-size: 1rem;
-  box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light);
+  box-shadow: 
+    6px 6px 12px var(--shadow-dark),
+    -6px -6px 12px var(--shadow-light);
   color: var(--text);
 }
 
-.passwordWrapper {
-  position: relative;
-}
-
-.eyeIcon {
-  position: absolute;
-  right: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
-  font-size: 1.2rem;
-  color: var(--accent);
-}
-
+/* Fila de botones de acción */
 .buttonRow {
   display: flex;
   gap: 1rem;
@@ -188,6 +189,7 @@ body {
   justify-content: center;
 }
 
+/* Mensaje de error */
 .error {
   color: #d81b60;
   font-size: 0.85rem;
@@ -195,6 +197,7 @@ body {
   margin-bottom: -0.5rem;
 }
 
+/* Texto de ayuda debajo de los campos */
 .helper {
   font-size: 0.85rem;
   color: #555;
@@ -203,17 +206,7 @@ body {
   line-height: 1.3;
 }
 
-.eyeIcon {
-  position: absolute;
-  right: 0.8rem;
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
-  color: var(--accent);
-  display: flex;
-  align-items: center;
-}
-
+/* Mensaje general de respuesta del formulario */
 .mensaje {
   font-size: 0.85rem;
   color: var(--text);
@@ -221,5 +214,3 @@ body {
   text-align: center;
   font-weight: 500;
 }
-
-

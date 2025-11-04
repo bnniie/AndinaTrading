@@ -6,7 +6,7 @@ import jakarta.validation.constraints.*;
 /**
  * Entidad JPA que representa a un comisionista en la base de datos.
  * Mapeada a la tabla 'comisionista'.
- * Incluye validaciones para campos obligatorios y formato de correo.
+ * Incluye validaciones para campos obligatorios y relaciones con ciudad y país.
  */
 @Entity
 @Table(name = "comisionista")
@@ -14,7 +14,7 @@ public class Comisionista {
 
     /**
      * Identificador único del comisionista.
-     * Se genera automáticamente con estrategia de incremento.
+     * Se genera automáticamente mediante estrategia de incremento.
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,43 +22,52 @@ public class Comisionista {
 
     /**
      * Nombre de usuario del comisionista.
-     * Campo obligatorio, no puede estar en blanco.
+     * Debe ser único y no puede estar en blanco.
      */
     @NotBlank
+    @Column(unique = true)
     private String usuario;
 
     /**
      * Contraseña del comisionista.
-     * Campo obligatorio, no puede estar en blanco.
+     * Debe tener al menos 6 caracteres y no puede estar en blanco.
      */
     @NotBlank
+    @Size(min = 6)
     private String contrasena;
 
     /**
      * Nombre completo del comisionista.
-     * Campo obligatorio, no puede estar en blanco.
+     * Campo obligatorio.
      */
     @NotBlank
     private String nombreCompleto;
 
     /**
      * Correo electrónico del comisionista.
-     * Validado con formato de email.
+     * Debe tener formato válido y no puede estar en blanco.
      */
     @Email
+    @NotBlank
     private String correo;
 
     /**
-     * Ciudad de residencia del comisionista.
-     * Campo opcional.
+     * Ciudad asociada al comisionista.
+     * Relación muchos-a-uno con la entidad {@link Ciudad}.
      */
-    private String ciudad;
+    @ManyToOne
+    @JoinColumn(name = "ciudad_id")
+    private Ciudad ciudad;
 
     /**
-     * País de residencia del comisionista.
-     * Campo opcional.
+     * País asociado al comisionista.
+     * Relación muchos-a-uno con la entidad {@link Pais}.
      */
-    private String pais;
+    @ManyToOne
+    @JoinColumn(name = "pais_id")
+    private Pais pais;
+
+    // Constructores
 
     /**
      * Constructor vacío requerido por JPA.
@@ -66,15 +75,15 @@ public class Comisionista {
     public Comisionista() {}
 
     /**
-     * Constructor con todos los campos excepto el ID.
-     * @param usuario nombre de usuario
-     * @param contrasena contraseña
-     * @param nombreCompleto nombre completo
-     * @param correo correo electrónico
-     * @param ciudad ciudad de residencia
-     * @param pais país de residencia
+     * Constructor completo para inicializar un comisionista.
+     * @param usuario nombre de usuario.
+     * @param contrasena contraseña.
+     * @param nombreCompleto nombre completo.
+     * @param correo correo electrónico.
+     * @param ciudad ciudad asociada.
+     * @param pais país asociado.
      */
-    public Comisionista(String usuario, String contrasena, String nombreCompleto, String correo, String ciudad, String pais) {
+    public Comisionista(String usuario, String contrasena, String nombreCompleto, String correo, Ciudad ciudad, Pais pais) {
         this.usuario = usuario;
         this.contrasena = contrasena;
         this.nombreCompleto = nombreCompleto;
@@ -83,7 +92,7 @@ public class Comisionista {
         this.pais = pais;
     }
 
-    // Métodos getter y setter para cada campo
+    // Getters y setters
 
     public Long getId() {
         return id;
@@ -125,19 +134,19 @@ public class Comisionista {
         this.correo = correo;
     }
 
-    public String getCiudad() {
+    public Ciudad getCiudad() {
         return ciudad;
     }
 
-    public void setCiudad(String ciudad) {
+    public void setCiudad(Ciudad ciudad) {
         this.ciudad = ciudad;
     }
 
-    public String getPais() {
+    public Pais getPais() {
         return pais;
     }
 
-    public void setPais(String pais) {
+    public void setPais(Pais pais) {
         this.pais = pais;
     }
 }

@@ -2,52 +2,99 @@ package co.edu.unbosque.model.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import co.edu.unbosque.model.entity.Empresa;
 
+/**
+ * Entidad JPA que representa una orden de compra o venta de acciones en el sistema.
+ * Mapeada a la tabla 'orden' en la base de datos.
+ * Contiene información sobre la empresa involucrada, el inversionista, el comisionista, el estado y fechas clave.
+ */
 @Entity
 @Table(name = "orden")
 public class Orden {
 
+    /**
+     * Identificador único de la orden.
+     * Se genera automáticamente mediante estrategia de incremento.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /**
+     * Fecha y hora en que se creó la orden.
+     */
     @Column(name = "fecha_creacion")
     private LocalDateTime fechaCreacion;
 
+    /**
+     * Estado actual de la orden (ej. PENDIENTE, APROBADA, RECHAZADA, EJECUTADA).
+     */
     @Column(name = "estado")
     private String estado;
 
+    /**
+     * Número de acciones involucradas en la orden.
+     */
     @Column(name = "numero_acciones")
     private int numeroAcciones;
 
+    /**
+     * Empresa sobre la cual se realiza la orden.
+     * Relación muchos-a-uno con la entidad {@link Empresa}.
+     */
     @ManyToOne
     @JoinColumn(name = "empresa_id")
     private Empresa empresa;
 
+    /**
+     * Comisionista que gestiona la orden.
+     * Relación muchos-a-uno con la entidad {@link Comisionista}.
+     */
     @ManyToOne
     @JoinColumn(name = "comisionista_id")
     private Comisionista comisionista;
 
+    /**
+     * Inversionista que genera la orden.
+     * Relación muchos-a-uno con la entidad {@link Inversionista}.
+     */
     @ManyToOne
     @JoinColumn(name = "inversionista_id")
     private Inversionista inversionista;
 
+    /**
+     * Tipo de orden (ej. COMPRA, VENTA).
+     */
     @Column(name = "tipo_orden")
     private String tipoOrden;
 
+    /**
+     * Valor total de la orden (acciones × precio).
+     */
     @Column(name = "valor_orden")
     private double valorOrden;
 
+    /**
+     * Valor de la comisión aplicada a la orden.
+     */
     @Column(name = "valor_comision")
     private double valorComision;
 
+    /**
+     * Fecha en que la orden fue aprobada.
+     */
     @Column(name = "fecha_aprobacion")
     private LocalDateTime fechaAprobacion;
 
+    /**
+     * Fecha en que la orden fue ejecutada.
+     */
     @Column(name = "fecha_ejecucion")
     private LocalDateTime fechaEjecucion;
 
+    /**
+     * Fecha en que la orden fue rechazada.
+     */
     @Column(name = "fecha_rechazo")
     private LocalDateTime fechaRechazo;
 

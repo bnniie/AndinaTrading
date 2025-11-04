@@ -1,71 +1,80 @@
+/* Capa de superposición que oscurece el fondo y centra el modal */
 .overlay {
-  position: fixed;
+  position: fixed; /* Se fija sobre toda la pantalla */
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.4);
+  width: 100vw; /* Ancho completo del viewport */
+  height: 100vh; /* Alto completo del viewport */
+  background: rgba(0, 0, 0, 0.4); /* Fondo semitransparente oscuro */
   display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+  justify-content: center; /* Centra horizontalmente el modal */
+  align-items: center; /* Centra verticalmente el modal */
+  z-index: 1000; /* Asegura que esté por encima de otros elementos */
 }
 
+/* Contenedor principal del modal */
 .modal {
-  background: #fff;
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
-  width: 360px;
-  max-width: 90vw;
-  text-align: center;
+  background: #fff; /* Fondo blanco */
+  padding: 2rem; /* Espaciado interno */
+  border-radius: 12px; /* Bordes redondeados */
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.2); /* Sombra suave */
+  width: 360px; /* Ancho fijo */
+  max-width: 90vw; /* Adaptable en pantallas pequeñas */
+  text-align: center; /* Centra el contenido */
 }
 
+/* Título del modal */
 .titulo {
-  color: #d881a3;
+  color: #d881a3; /* Color de acento */
   font-size: 1.5rem;
   margin-bottom: 0.5rem;
 }
 
+/* Texto descriptivo o subtítulo */
 .referencia {
   font-size: 0.95rem;
-  color: #555;
+  color: #555; /* Gris medio */
   margin-bottom: 1rem;
 }
 
+/* Campo de entrada de datos */
 .input {
   width: 220px;
   padding: 0.6rem;
   border-radius: 8px;
-  border: 1px solid #ccc;
+  border: 1px solid #ccc; /* Borde gris claro */
   font-size: 1rem;
   text-align: center;
 }
 
+/* Mensaje de error */
 .error {
-  color: #e11d48;
+  color: #e11d48; /* Rojo intenso */
   font-size: 0.9rem;
   margin-top: 0.5rem;
 }
 
+/* Contenedor de botones de acción */
 .botones {
   display: flex;
   justify-content: center;
-  gap: 1.5rem;
+  gap: 1.5rem; /* Espaciado entre botones */
   margin-top: 1.5rem;
 }
 
+/* Estilo base para botones de acción */
 .actionButton {
-  background-color: #d881a3;
+  background-color: #d881a3; /* Color de fondo principal */
   color: white;
   border: none;
   padding: 0.6rem 1.2rem;
   border-radius: 8px;
   cursor: pointer;
   font-weight: 500;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease; /* Transición suave */
 }
 
+/* Estilo al pasar el cursor sobre el botón */
 .actionButton:hover {
-  background-color: #c06b8f;
+  background-color: #c06b8f; /* Variante más oscura del color base */
 }

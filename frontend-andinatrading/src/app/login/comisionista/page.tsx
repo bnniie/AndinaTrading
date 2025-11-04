@@ -5,21 +5,36 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import styles from '../LoginPage.module.css';
 
+/**
+ * Componente de inicio de sesión para comisionistas.
+ * Permite ingresar credenciales, validar contra el backend y redirigir al dashboard correspondiente.
+ */
 export default function LoginComisionistaPage() {
   const router = useRouter();
 
+  // Estado local para almacenar usuario y contraseña
   const [credenciales, setCredenciales] = useState({
     usuario: '',
     contrasena: ''
   });
 
+  // Controla visibilidad de la contraseña
   const [mostrarContrasena, setMostrarContrasena] = useState(false);
+
+  // Mensaje de respuesta del servidor (éxito o error)
   const [mensaje, setMensaje] = useState('');
 
+  /**
+   * Actualiza el estado de las credenciales al modificar los campos.
+   */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCredenciales({ ...credenciales, [e.target.name]: e.target.value });
   };
 
+  /**
+   * Envía las credenciales al backend y gestiona la respuesta.
+   * Si es exitoso, guarda datos en localStorage y redirige al dashboard.
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -61,12 +76,16 @@ export default function LoginComisionistaPage() {
     }
   };
 
+  /**
+   * Redirige al usuario a la página principal.
+   */
   const volverInicio = () => {
     router.push('/');
   };
 
   return (
     <main className={styles.container}>
+      {/* Sección izquierda con branding */}
       <section className={styles.left}>
         <Image
           src="/static/img/icon.png"
@@ -81,8 +100,10 @@ export default function LoginComisionistaPage() {
         </p>
       </section>
 
+      {/* Sección derecha con formulario */}
       <section className={styles.right}>
         <form onSubmit={handleSubmit}>
+          {/* Campo usuario */}
           <div className={styles.formGroup}>
             <input
               type="text"
@@ -95,6 +116,7 @@ export default function LoginComisionistaPage() {
             />
           </div>
 
+          {/* Campo contraseña con ícono de visibilidad */}
           <div className={styles.formGroup}>
             <div className={styles.passwordWrapper}>
               <input
@@ -115,11 +137,13 @@ export default function LoginComisionistaPage() {
             </div>
           </div>
 
+          {/* Botones de acción */}
           <div className={styles.buttonRow}>
             <button type="submit" className={styles.actionButton}>Ingresar</button>
             <button type="button" onClick={volverInicio} className={styles.actionButton}>Volver</button>
           </div>
 
+          {/* Mensaje de respuesta */}
           {mensaje && (
             <p className={styles.mensaje}>{mensaje}</p>
           )}

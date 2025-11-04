@@ -1,73 +1,83 @@
+/* Capa de fondo oscurecido que cubre toda la pantalla */
 .overlay {
-  position: fixed;
+  position: fixed; /* Se posiciona sobre todo el viewport */
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.4);
+  width: 100vw; /* Ancho completo de la ventana */
+  height: 100vh; /* Alto completo de la ventana */
+  background: rgba(0, 0, 0, 0.4); /* Fondo semitransparente */
   display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+  justify-content: center; /* Centra horizontalmente el modal */
+  align-items: center; /* Centra verticalmente el modal */
+  z-index: 1000; /* Prioridad alta para superponer sobre otros elementos */
 }
 
+/* Contenedor principal del modal */
 .modal {
-  background: #fff;
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
-  width: 400px;
-  max-width: 90vw;
+  background: #fff; /* Fondo blanco */
+  padding: 2rem; /* Espaciado interno */
+  border-radius: 12px; /* Bordes redondeados */
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.2); /* Sombra externa suave */
+  width: 400px; /* Ancho fijo */
+  max-width: 90vw; /* Adaptable en pantallas pequeñas */
 }
 
+/* Título del modal */
 .title {
-  color: #d881a3;
+  color: #d881a3; /* Color de acento */
   font-size: 1.5rem;
   margin-bottom: 1rem;
   text-align: center;
 }
 
+/* Contenedor del formulario en formato columna */
 .formGrid {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  gap: 1rem; /* Espaciado entre campos */
 }
 
+/* Subgrupo de campos en columna */
 .column {
   display: flex;
   flex-direction: column;
 }
 
+/* Estilo base para campos de entrada */
 .input {
   width: 100%;
   padding: 0.6rem;
   border-radius: 8px;
-  border: 1px solid #ccc;
+  border: 1px solid #ccc; /* Borde gris claro */
 }
 
+/* Texto auxiliar debajo de los campos */
 .helper {
   font-size: 0.8rem;
-  color: #666;
+  color: #666; /* Gris medio */
   margin-top: 0.2rem;
 }
 
+/* Fila de botones de acción */
 .buttonRow {
   display: flex;
-  gap: 1.5rem;
+  gap: 1.5rem; /* Espaciado entre botones */
   justify-content: space-between;
   margin-top: 1rem;
 }
 
+/* Botón de acción principal */
 .actionButton {
   padding: 0.6rem 1rem;
   border: none;
   border-radius: 8px;
-  background-color: #d881a3;
+  background-color: #d881a3; /* Color de fondo principal */
   color: white;
   cursor: pointer;
 }
 
+/* Campo de entrada específico para usuario */
 .usuarioInput {
   width: 280px;
   padding: 0.6rem;
@@ -75,8 +85,9 @@
   border: 1px solid #ccc;
 }
 
+/* Mensaje de error */
 .error {
-  color: #e11d48;
+  color: #e11d48; /* Rojo intenso */
   font-size: 0.9rem;
   margin-top: 0.5rem;
 }

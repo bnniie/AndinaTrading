@@ -5,23 +5,40 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import styles from './RestorePage.module.css';
 
+/**
+ * Página para restablecer la contraseña de un inversionista.
+ * Permite ingresar el usuario, nueva contraseña y confirmarla, con validación y retroalimentación visual.
+ */
 export default function RecuperarPage() {
   const router = useRouter();
 
+  // Estado para los campos del formulario
   const [credenciales, setCredenciales] = useState({
     usuario: '',
     nuevaContrasena: ''
   });
 
+  // Estado para campo de confirmación
   const [confirmarContrasena, setConfirmarContrasena] = useState('');
+
+  // Estados para mostrar/ocultar contraseñas
   const [mostrarContrasena, setMostrarContrasena] = useState(false);
   const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
+
+  // Mensaje de respuesta del servidor
   const [mensaje, setMensaje] = useState('');
 
+  /**
+   * Actualiza los campos del formulario.
+   */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCredenciales({ ...credenciales, [e.target.name]: e.target.value });
   };
 
+  /**
+   * Envía la solicitud de cambio de contraseña al backend.
+   * Valida que ambas contraseñas coincidan antes de enviar.
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -41,7 +58,7 @@ export default function RecuperarPage() {
         setMensaje('✅ Contraseña actualizada');
         setCredenciales({ usuario: '', nuevaContrasena: '' });
         setConfirmarContrasena('');
-        router.replace('/login')
+        router.replace('/login');
       } else if (response.status === 404) {
         setMensaje('❌ Usuario no encontrado');
       } else {
@@ -53,12 +70,16 @@ export default function RecuperarPage() {
     }
   };
 
+  /**
+   * Redirige al usuario a la página de login.
+   */
   const volverLogin = () => {
     router.push('/login');
   };
 
   return (
     <main className={styles.container}>
+      {/* Sección izquierda con branding */}
       <section className={styles.left}>
         <Image
           src="/static/img/icon.png"
@@ -73,8 +94,10 @@ export default function RecuperarPage() {
         </p>
       </section>
 
+      {/* Sección derecha con formulario */}
       <section className={styles.right}>
         <form onSubmit={handleSubmit}>
+          {/* Campo usuario */}
           <div className={styles.formGroup}>
             <input
               type="text"
@@ -87,6 +110,7 @@ export default function RecuperarPage() {
             />
           </div>
 
+          {/* Campo nueva contraseña */}
           <div className={styles.formGroup}>
             <div className={styles.passwordWrapper}>
               <input
@@ -113,6 +137,7 @@ export default function RecuperarPage() {
             </small>
           </div>
 
+          {/* Campo confirmar contraseña */}
           <div className={styles.formGroup}>
             <div className={styles.passwordWrapper}>
               <input
@@ -136,11 +161,13 @@ export default function RecuperarPage() {
             </small>
           </div>
 
+          {/* Botones de acción */}
           <div className={styles.buttonRow}>
             <button type="submit" className={styles.actionButton}>Actualizar</button>
             <button type="button" onClick={volverLogin} className={styles.actionButton}>Volver</button>
           </div>
 
+          {/* Mensaje de respuesta */}
           {mensaje && (
             <p className={styles.mensaje}>{mensaje}</p>
           )}

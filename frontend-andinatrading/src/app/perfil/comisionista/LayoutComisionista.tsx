@@ -1,26 +1,22 @@
 'use client';
 
 import { ReactNode } from 'react';
-import styles from './LayoutPage.module.css';
+import styles from './LayoutPageComisionista.module.css';
 import {
-  Axis3d,
-  FilePen,
-  UsersRound,
-  HandHeart,
+  BanknoteArrowUp,
+  Newspaper,
+  HandCoins,
   Undo2
 } from 'lucide-react';
 
 /**
- * Componente de layout principal para páginas protegidas del sistema.
- * Incluye un sidebar con navegación icónica y un panel principal para renderizar contenido dinámico.
- *
- * @param children contenido dinámico que se renderiza en el panel derecho.
- * @returns estructura visual con menú lateral y área de contenido.
+ * Layout principal para comisionistas.
+ * Divide la vista en un sidebar izquierdo con navegación y un panel derecho para contenido dinámico.
  */
 export default function Layout({ children }: { children: ReactNode }) {
   /**
-   * Función para cerrar sesión del usuario.
-   * Realiza una solicitud POST al endpoint de logout y redirige al home.
+   * Cierra la sesión del usuario comisionista.
+   * Realiza una petición POST al endpoint de logout y redirige al inicio.
    */
   const cerrarSesion = () => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/inversionistas/logout`, {
@@ -33,28 +29,30 @@ export default function Layout({ children }: { children: ReactNode }) {
 
   return (
     <div className={styles.layout}>
-      {/* Sidebar izquierdo con íconos de navegación */}
+      {/* Sidebar izquierdo con navegación vertical */}
       <aside className={styles.div1}>
-        {/* Logo principal */}
+        {/* Logotipo institucional */}
         <img src="/static/img/icon.png" alt="Logo" className={styles['icon-pic']} />
 
-        {/* Menú de navegación con burbujas */}
+        {/* Grupo de botones de navegación */}
         <div className={styles['menu-bubbles']}>
-          <div className={styles.bubble} title="Dashboard">
-            <Axis3d size={24} />
+          {/* Acceso a módulo de bolsa */}
+          <div className={styles.bubble} title="Bolsa">
+            <BanknoteArrowUp size={24} />
           </div>
-          <div className={styles.bubble} title="Órdenes">
-            <FilePen size={24} />
+
+          {/* Acceso a solicitudes pendientes */}
+          <div className={styles.bubble} title="Solicitudes pendientes">
+            <Newspaper size={24} />
           </div>
-          <div className={styles.bubble} title="Comisionistas">
-            <UsersRound size={24} />
-          </div>
-          <div className={styles.bubble} title="Favoritas">
-            <HandHeart size={24} />
+
+          {/* Acceso a órdenes pendientes */}
+          <div className={styles.bubble} title="Órdenes pendientes">
+            <HandCoins size={24} />
           </div>
         </div>
 
-        {/* Botón para cerrar sesión */}
+        {/* Botón de cierre de sesión */}
         <div className={styles['logout-bubble']}>
           <div
             className={`${styles.bubble} ${styles.logout}`}

@@ -16,6 +16,7 @@ import {
   Legend
 } from 'chart.js';
 
+// Registro de módulos necesarios para los gráficos
 ChartJS.register(
   ArcElement,
   LineElement,
@@ -31,6 +32,10 @@ import EditarPerfil from './EditarPerfilModal';
 import IntroducirSaldoModal from './IntroducirSaldoModal';
 import EditarContratoModal from './EditarContratoModal';
 
+/**
+ * Página de perfil del inversionista.
+ * Muestra datos personales, estadísticas de órdenes, saldo actual, movimientos recientes y permite editar perfil, saldo y contrato.
+ */
 export default function PerfilPage() {
   const [inversionista, setInversionista] = useState<any>(null);
   const [mensaje, setMensaje] = useState('');
@@ -94,6 +99,7 @@ export default function PerfilPage() {
     .catch(() => setMovimientos([]));
 }, []);
 
+  // Datos para gráfico circular
   const pieData = {
     labels: ['Por aprobar', 'Aprobadas', 'Finalizadas'],
     datasets: [
@@ -111,6 +117,7 @@ export default function PerfilPage() {
     ]
   };
 
+  // Datos para gráfico de línea
   const lineData = {
     labels: movimientos.map((o) => o.fechaCreacion),
     datasets: [
@@ -127,6 +134,9 @@ export default function PerfilPage() {
     ]
   };
 
+  /**
+   * Guarda los datos actualizados del perfil
+   */
   const totalOrdenes = Object.values(ordenesPorEstado).reduce((acc, val) => acc + val, 0);
 
   const handleGuardarPerfil = async (datosActualizados: { usuario: string; telefono: string }) => {
@@ -156,6 +166,9 @@ export default function PerfilPage() {
   }
 };
 
+ /**
+   * Guarda el nuevo saldo ingresado
+   */
 const handleGuardarSaldo = async (montoAdicional: number) => {
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/inversionistas/actualizar-saldo`, {
@@ -202,6 +215,9 @@ useEffect(() => {
   obtenerContrato();
 }, []);
 
+ /**
+   * Guarda los parámetros editados del contrato
+   */
   const handleGuardarContrato = async ({ porcentaje, duracion }: { porcentaje: number; duracion: number }) => {
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/inversionistas/editar-contrato`, {
@@ -223,7 +239,6 @@ useEffect(() => {
   }
 };
 
-
   return (
     <Layout>
       <div className={styles.pageContainer}>
@@ -234,6 +249,7 @@ useEffect(() => {
 
         {inversionista && (
           <div className={styles.contenedorPrincipal}>
+            {/* Datos personales */}
             <div className={styles.datos}>
               <div className={styles.iconoPerfil}>
                 <div className={styles.iconoCirculo}>
@@ -259,6 +275,7 @@ useEffect(() => {
                 <h3 className={styles.tituloOrdenes}>Órdenes</h3>
                 <div className={styles.ordenesContenido}>
                   <div className={styles.graficoOrdenes}>
+                    {/* Diagrama de torta */}
                     {totalOrdenes > 0 ? (
                       <Pie
                         data={pieData}
@@ -274,6 +291,7 @@ useEffect(() => {
                     )}
                   </div>
 
+                  {/* Ordenes por estado */}
                   <div className={styles.listaOrdenes}>
                     <ul>
                       <li><span className={styles.porAprobar}>Por aprobar:</span><span className={styles.valor}> {ordenesPorEstado.por_aprobar ?? 0}</span></li>
@@ -288,6 +306,7 @@ useEffect(() => {
                 <div className={styles.saldoGrafico}>
                   <div className={styles.saldoYBotones}>
                     <h3 className={styles.saldoTitulo}>
+                      {/* Sección de saldo */}
                       <span className={styles.saldoLabel}>Saldo:</span>{' '}
                       <span className={styles.saldoValor}>${inversionista.saldo}</span>
                     </h3>
@@ -298,6 +317,7 @@ useEffect(() => {
                   </div>
                   <div className={styles.graficoMovimientos}>
                     <h3 className={styles.subtituloGrafico}>Movimientos Recientes</h3>
+                    {/* Diagrama de linea */}
                   <Line
                     data={lineData}
                     options={{
@@ -337,6 +357,7 @@ useEffect(() => {
                     />
                   </div>
 
+                  {/* Mostrar Editar Perfil */}
                   {mostrarModal && inversionista && (
                     <EditarPerfil
                       inversionista={inversionista}
@@ -345,6 +366,7 @@ useEffect(() => {
                     />
                   )}
 
+                  {/* Mostrar Saldo */}
                   {mostrarSaldoModal && (
                     <IntroducirSaldoModal
                       saldoActual={inversionista.saldo}
@@ -353,6 +375,7 @@ useEffect(() => {
                     />
                   )}
 
+                  {/* Mostrar Contrato */}
                   {mostrarContratoModal && (
                   <EditarContratoModal
                     porcentajeInicial={contrato?.porcentajeComision ?? 0}
