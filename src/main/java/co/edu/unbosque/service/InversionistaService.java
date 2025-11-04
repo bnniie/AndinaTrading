@@ -205,13 +205,14 @@ public class InversionistaService {
         Inversionista inversionista = repo.findByUsuario(usuario);
         if (inversionista == null) return false;
 
+        inversionista.setPorcentajeComision(porcentaje);
+
         Contrato contrato = inversionista.getContrato();
         if (contrato == null) {
             contrato = new Contrato();
             contrato.setInversionista(inversionista);
         }
 
-        contrato.setPorcentajeComision(porcentaje);
         contrato.setDuracionMeses(duracion);
         inversionista.setContrato(contrato);
 

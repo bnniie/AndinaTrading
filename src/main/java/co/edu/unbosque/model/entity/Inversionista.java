@@ -6,100 +6,82 @@ import jakarta.validation.constraints.*;
 
 /**
  * Entidad JPA que representa a un inversionista dentro del sistema.
- * Contiene información personal, credenciales de acceso, ubicación geográfica y relación con su contrato.
+ * Contiene información personal, credenciales de acceso, ubicación geográfica,
+ * datos financieros y relación contractual.
  */
 @Entity
+@Table(name = "inversionista")
 public class Inversionista {
 
-    /**
-     * Identificador único del inversionista.
-     * Se genera automáticamente mediante estrategia de incremento.
-     */
+    // Identificador único autogenerado
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /**
-     * Nombre del inversionista.
-     * Campo obligatorio.
-     */
+    // Nombre del inversionista (requerido)
     @NotBlank
     private String nombre;
 
-    /**
-     * Apellido del inversionista.
-     * Campo obligatorio.
-     */
+    // Apellido del inversionista (requerido)
     @NotBlank
     private String apellido;
 
-    /**
-     * Documento de identidad del inversionista.
-     * Debe ser único y no puede estar en blanco.
-     */
+    // Documento de identidad único (requerido)
     @NotBlank
     @Column(unique = true)
     private String documentoIdentidad;
 
-    /**
-     * Correo electrónico del inversionista.
-     * Debe tener formato válido y no puede estar en blanco.
-     */
+    // Correo electrónico válido (requerido)
     @Email
     @NotBlank
     private String correo;
 
-    /**
-     * Número de teléfono del inversionista.
-     * Campo obligatorio.
-     */
+    // Teléfono de contacto (requerido)
     @NotBlank
     private String telefono;
 
-    /**
-     * Ciudad asociada al inversionista.
-     * Relación muchos-a-uno con la entidad {@link Ciudad}.
-     * Se utiliza {@link JsonManagedReference} para evitar ciclos de serialización.
-     */
+    // Ciudad asociada (relación muchos-a-uno)
     @ManyToOne
     @JoinColumn(name = "ciudad_id")
     @JsonManagedReference
     private Ciudad ciudad;
 
-    /**
-     * País asociado al inversionista.
-     * Relación muchos-a-uno con la entidad {@link Pais}.
-     */
+    // País asociado (relación muchos-a-uno)
     @ManyToOne
     @JoinColumn(name = "pais_id")
     private Pais pais;
 
-    /**
-     * Nombre de usuario del inversionista.
-     * Debe ser único y no puede estar en blanco.
-     */
+    // Nombre de usuario único (requerido)
     @NotBlank
     @Column(unique = true)
     private String usuario;
 
-    /**
-     * Contraseña del inversionista.
-     * Debe tener al menos 6 caracteres.
-     */
+    // Contraseña con mínimo de 6 caracteres (requerido)
     @NotBlank
     @Size(min = 6)
     private String contrasena;
 
     /**
      * Saldo disponible del inversionista.
-     * Puede ser nulo inicialmente.
+     * No puede ser nulo ni negativo. Se inicializa en 0.0.
      */
-    private Double saldo;
+    @NotNull
+    @DecimalMin("0.0")
+    @Column(nullable = false)
+    private Double saldo = 0.0;
+
+    /**
+     * Porcentaje de comisión asignado al inversionista.
+     * Se almacena directamente en esta entidad.
+     */
+    @NotNull
+    @DecimalMin("0.0")
+    @Column(name = "porcentaje_comision", nullable = false)
+    private Double porcentajeComision = 5.0;
 
     /**
      * Contrato asociado al inversionista.
-     * Relación uno-a-uno con la entidad {@link Contrato}.
-     * Se gestiona en cascada desde esta entidad.
+     * Relación uno-a-uno con gestión en cascada.
      */
     @OneToOne(mappedBy = "inversionista", cascade = CascadeType.ALL)
     private Contrato contrato;
@@ -192,6 +174,14 @@ public class Inversionista {
 
     public void setSaldo(Double saldo) {
         this.saldo = saldo;
+    }
+
+    public Double getPorcentajeComision() {
+        return porcentajeComision;
+    }
+
+    public void setPorcentajeComision(Double porcentajeComision) {
+        this.porcentajeComision = porcentajeComision;
     }
 
     public Contrato getContrato() {

@@ -1,53 +1,53 @@
 package co.edu.unbosque.model.DTO;
 
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+
 /**
- * Data Transfer Object (DTO) para representar los datos de un contrato.
- * Utilizado en operaciones de edición o actualización de contrato por parte del inversionista.
+ * DTO para actualizar el contrato del inversionista.
+ * El porcentaje se guarda en la tabla 'inversionista' y la duración en la tabla 'contrato'.
  */
 public class ContratoDTO {
 
     /**
-     * Porcentaje de comisión o rentabilidad asociado al contrato.
-     * Este valor puede representar el retorno esperado o la participación del inversionista.
+     * Porcentaje de comisión que se asignará al inversionista.
+     * Este valor se guarda directamente en la tabla 'inversionista'.
      */
+    @NotNull(message = "El porcentaje de comisión no puede ser nulo")
+    @DecimalMin(value = "0.0", message = "El porcentaje debe ser mayor o igual a 0")
     private Double porcentaje;
 
     /**
-     * Duración del contrato en días.
-     * Define el tiempo de vigencia del acuerdo entre el inversionista y la plataforma.
+     * Duración del contrato en meses.
+     * Este valor se guarda en la tabla 'contrato'.
      */
+    @NotNull(message = "La duración no puede ser nula")
+    @Min(value = 1, message = "La duración debe ser al menos de 1 mes")
     private Integer duracion;
 
-    // Getters y setters
+    // Constructor vacío
+    public ContratoDTO() {}
 
-    /**
-     * Obtiene el porcentaje del contrato.
-     * @return valor decimal del porcentaje.
-     */
+    // Constructor con parámetros
+    public ContratoDTO(Double porcentaje, Integer duracion) {
+        this.porcentaje = porcentaje;
+        this.duracion = duracion;
+    }
+
+    // Getters y setters
     public Double getPorcentaje() {
         return porcentaje;
     }
 
-    /**
-     * Establece el porcentaje del contrato.
-     * @param porcentaje valor decimal a asignar.
-     */
     public void setPorcentaje(Double porcentaje) {
         this.porcentaje = porcentaje;
     }
 
-    /**
-     * Obtiene la duración del contrato en días.
-     * @return número entero que representa la duración.
-     */
     public Integer getDuracion() {
         return duracion;
     }
 
-    /**
-     * Establece la duración del contrato.
-     * @param duracion número entero en días.
-     */
     public void setDuracion(Integer duracion) {
         this.duracion = duracion;
     }

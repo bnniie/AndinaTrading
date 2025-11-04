@@ -200,7 +200,7 @@ public class InversionistaController {
      * @return 200 OK si se actualiza, 404 si falla, 401 si no hay sesión.
      */
     @PutMapping("/editar-contrato")
-    public ResponseEntity<?> editarContrato(@RequestBody ContratoDTO datos, HttpSession session) {
+    public ResponseEntity<?> editarContrato(@Valid @RequestBody ContratoDTO datos, HttpSession session) {
         String usuario = (String) session.getAttribute("usuario");
         if (usuario == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 

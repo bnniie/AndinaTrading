@@ -192,6 +192,9 @@ const handleGuardarSaldo = async (montoAdicional: number) => {
   }
 };
 
+/**
+   * Guarda la información actualziada del contrato
+   */
 useEffect(() => {
   const obtenerContrato = async () => {
     try {
@@ -203,7 +206,7 @@ useEffect(() => {
       if (response.ok) {
         const data = await response.json();
         setContrato({
-        porcentajeComision: data.porcentajeComision,
+        porcentajeComision: inversionista?.porcentajeComision ?? 0,
         duracionMeses: data.duracionMeses
       });
       }
@@ -225,6 +228,7 @@ useEffect(() => {
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
       body: JSON.stringify({ porcentaje, duracion })
+
     });
 
     if (response.ok) {
@@ -378,7 +382,7 @@ useEffect(() => {
                   {/* Mostrar Contrato */}
                   {mostrarContratoModal && (
                   <EditarContratoModal
-                    porcentajeInicial={contrato?.porcentajeComision ?? 0}
+                    porcentajeInicial={inversionista?.porcentajeComision ?? 0}
                     duracionInicial={contrato?.duracionMeses ?? 12}
                     onClose={() => setMostrarContratoModal(false)}
                     onSave={handleGuardarContrato}
