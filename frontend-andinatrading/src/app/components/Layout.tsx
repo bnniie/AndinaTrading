@@ -1,6 +1,7 @@
 'use client';
 
 import { ReactNode } from 'react';
+import Link from "next/link";
 import styles from './LayoutPage.module.css';
 import {
   Axis3d,
@@ -43,9 +44,9 @@ export default function Layout({ children }: { children: ReactNode }) {
           <div className={styles.bubble} title="Dashboard">
             <Axis3d size={24} />
           </div>
-          <div className={styles.bubble} title="Órdenes">
+          <Link href="http://localhost:8000/verOrdenes/inversionista?usuario=${user}" className={styles.bubble} title="Órdenes">
             <FilePen size={24} />
-          </div>
+          </Link>
           <div className={styles.bubble} title="Comisionistas">
             <UsersRound size={24} />
           </div>

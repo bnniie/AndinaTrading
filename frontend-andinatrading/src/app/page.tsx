@@ -25,7 +25,7 @@ export default function HomePage() {
 
         {/* Descripción o eslogan de la plataforma */}
         <p className={styles.description}>
-          Donde las oportunidades se convierten en decisiones financieras :3
+          Tu dinero, bajo control. Tus decisiones, con inteligencia.
         </p>
       </section>
 

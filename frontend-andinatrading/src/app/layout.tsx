@@ -12,7 +12,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Meta descripción para motores de búsqueda y redes sociales */}
         <meta
           name="description"
-          content="Donde las oportunidades se convierten en decisiones financieras :3"
+          content="Tu dinero, bajo control. Tus decisiones, con inteligencia."
         />
 
         {/* Ícono que se muestra en la pestaña del navegador */}
